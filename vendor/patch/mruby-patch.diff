@@ -1,5 +1,5 @@
 --- vendor/mruby-source/src/vm.c	2020-02-18 12:15:54.346444209 +0900
-+++ vendor/mruby-source/src/vm.c	2020-02-27 16:27:21.054823514 +0900
++++ vendor/mruby-source/src/vm.c	2020-02-27 17:47:29.276229479 +0900
 @@ -117,7 +117,7 @@ stack_clear(mrb_value *from, size_t coun
  }
  
@@ -9,7 +9,7 @@
  {
    while (size-- > 0) {
      *dst++ = *src++;
-@@ -182,9 +182,9 @@ stack_extend_alloc(mrb_state *mrb, mrb_i
+@@ -182,13 +182,13 @@ stack_extend_alloc(mrb_state *mrb, mrb_i
  {
    mrb_value *oldbase = mrb->c->stbase;
    mrb_value *newstack;
@@ -22,3 +22,16 @@
  
    if (off > size) size = off;
  #ifdef MRB_STACK_EXTEND_DOUBLING
+-  if ((size_t)room <= size)
++  if (room <= size)
+     size *= 2;
+   else
+     size += room;
+@@ -515,6 +515,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+     if (ci->argc > 0) {
+       stack_copy(mrb->c->stack+1, argv, argc);
+     }
++    printf("argc:%d", argc);
+     mrb->c->stack[argc+1] = blk;
+ 
+     if (MRB_METHOD_CFUNC_P(m)) {
