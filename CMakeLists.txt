@@ -736,7 +736,12 @@ else()
   set(MRUBY_INCLUDE_DIRS "")
   set(MRUBY_LIBS "")
 endif()
-set(MRUBY_DEFINITIONS "MRB_INT64" "HAVE_ONIGMO_H")
+
+if(WIN32)
+  set(MRUBY_DEFINITIONS "HAVE_ONIGMO_H")
+else()
+  set(MRUBY_DEFINITIONS "MRB_INT64" "HAVE_ONIGMO_H")
+endif()
 
 # For mruby-file-stat
 if(NOT WIN32)
