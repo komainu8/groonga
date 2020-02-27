@@ -9,14 +9,6 @@ environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       VS_VERSION: 15
-      ARCH: amd64
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      VS_VERSION: 14
-      ARCH: amd64
-    - VS_VERSION: 12
-      ARCH: amd64
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      VS_VERSION: 15
       ARCH: x86
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       VS_VERSION: 14
@@ -38,7 +30,7 @@ install:
   - set PATH=C:\Ruby25-x64\bin;%PATH%
   - set PATH=C:\msys64\usr\bin;%PATH%
   - pacman --sync --refresh --sysupgrade --noconfirm
-  - choco install -y curl 7zip.commandline
+  - choco install -y curl 7zip.commandline patch
   - if "%VS_VERSION%" == "15" if "%ARCH%" == "x86" set VS2017_X86=TRUE
   - if "%VS_VERSION%" == "15" if "%ARCH%" == "amd64" set VS2017_AMD64=TRUE
   - if "%VS2017_X86%" == "TRUE"
@@ -88,6 +80,7 @@ install:
 build_script:
   - git submodule update --init --recursive
   - cd vendor
+  - patch -p1 < patch\mruby-patch.diff
   - ruby download_lz4.rb
   - ruby download_mecab.rb
   - ruby download_message_pack.rb

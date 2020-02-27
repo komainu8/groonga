@@ -1,0 +1,19 @@
+--- ../../groonga/vendor/mruby-source/src/vm.c	2020-02-18 12:15:54.346444209 +0900
++++ mruby-source/src/vm.c	2020-02-27 12:56:20.807725886 +0900
+@@ -457,6 +457,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+     struct RClass *c;
+     mrb_callinfo *ci;
+     int n = ci_nregs(mrb->c->ci);
++    mrb_int nn = n;
+     ptrdiff_t voff = -1;
+ 
+     if (!mrb->c->stack) {
+@@ -487,7 +488,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+     ci->stackent = mrb->c->stack;
+     ci->argc = (int)argc;
+     ci->target_class = c;
+-    mrb->c->stack = mrb->c->stack + n;
++    mrb->c->stack = mrb->c->stack + nn;
+     if (argc < 0) argc = 1;
+     if (mrb->c->stbase <= argv && argv < mrb->c->stend) {
+       voff = argv - mrb->c->stbase;
