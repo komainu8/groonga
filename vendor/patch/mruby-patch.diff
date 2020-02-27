@@ -27,11 +27,10 @@
      size *= 2;
    else
      size += room;
-@@ -515,6 +515,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+@@ -515,6 +515,6 @@ mrb_funcall_with_block(mrb_state *mrb, m
      if (ci->argc > 0) {
        stack_copy(mrb->c->stack+1, argv, argc);
      }
-+    printf("argc:%d", argc);
      mrb->c->stack[argc+1] = blk;
  
      if (MRB_METHOD_CFUNC_P(m)) {
