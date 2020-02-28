@@ -1,5 +1,5 @@
 --- vendor/mruby-source/src/vm.c	2020-02-18 12:15:54.346444209 +0900
-+++ vendor/mruby-source/src/vm.c	2020-02-28 13:45:48.430093539 +0900
++++ vendor/mruby-source/src/vm.c	2020-02-28 14:10:17.302292563 +0900
 @@ -117,7 +117,7 @@ stack_clear(mrb_value *from, size_t coun
  }
  
@@ -27,27 +27,15 @@
      size *= 2;
    else
      size += room;
-@@ -492,13 +492,13 @@ mrb_funcall_with_block(mrb_state *mrb, m
+@@ -490,7 +490,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+     mrb->c->stack = mrb->c->stack + n;
+     if (argc < 0) argc = 1;
      if (mrb->c->stbase <= argv && argv < mrb->c->stend) {
-       voff = argv - mrb->c->stbase;
+-      voff = argv - mrb->c->stbase;
++      //      voff = argv - mrb->c->stbase;
      }
--    if (argc >= CALL_MAXARGS) {
--      mrb_value args = mrb_ary_new_from_values(mrb, argc, argv);
--
--      mrb->c->stack[1] = args;
--      ci->argc = -1;
--      argc = 1;
--    }
-+//    if (argc >= CALL_MAXARGS) {
-+//      mrb_value args = mrb_ary_new_from_values(mrb, argc, argv);
-+//
-+//      mrb->c->stack[1] = args;
-+//      ci->argc = -1;
-+//      argc = 1;
-+//    }
-     mrb_stack_extend(mrb, argc + 2);
-     if (MRB_METHOD_PROC_P(m)) {
-       struct RProc *p = MRB_METHOD_PROC(m);
+     if (argc >= CALL_MAXARGS) {
+       mrb_value args = mrb_ary_new_from_values(mrb, argc, argv);
 @@ -515,7 +515,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
      if (ci->argc > 0) {
        stack_copy(mrb->c->stack+1, argv, argc);
