@@ -1,5 +1,5 @@
 --- vendor/mruby-source/src/vm.c	2020-02-18 12:15:54.346444209 +0900
-+++ vendor/mruby-source/src/vm.c	2020-02-28 15:42:47.858135515 +0900
++++ vendor/mruby-source/src/vm.c	2020-02-28 16:08:32.222589528 +0900
 @@ -117,7 +117,7 @@ stack_clear(mrb_value *from, size_t coun
  }
  
@@ -27,15 +27,15 @@
      size *= 2;
    else
      size += room;
-@@ -485,7 +485,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+@@ -484,7 +484,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+     }
      ci = cipush(mrb);
      ci->mid = mid;
-     ci->stackent = mrb->c->stack;
--    ci->argc = (int)argc;
-+    //ci->argc = (int)argc;
+-    ci->stackent = mrb->c->stack;
++    //ci->stackent = mrb->c->stack;
+     ci->argc = (int)argc;
      ci->target_class = c;
      mrb->c->stack = mrb->c->stack + n;
-     if (argc < 0) argc = 1;
 @@ -515,7 +515,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
      if (ci->argc > 0) {
        stack_copy(mrb->c->stack+1, argv, argc);
