@@ -1,5 +1,5 @@
 --- vendor/mruby-source/src/vm.c	2020-02-18 12:15:54.346444209 +0900
-+++ vendor/mruby-source/src/vm.c	2020-02-28 16:43:58.494681189 +0900
++++ vendor/mruby-source/src/vm.c	2020-03-02 09:25:49.104378889 +0900
 @@ -117,7 +117,7 @@ stack_clear(mrb_value *from, size_t coun
  }
  
@@ -40,7 +40,7 @@
      }
      if (mrb->c->ci - mrb->c->cibase > MRB_FUNCALL_DEPTH_MAX) {
        mrb_exc_raise(mrb, mrb_obj_value(mrb->stack_err));
-@@ -515,7 +515,7 @@ mrb_funcall_with_block(mrb_state *mrb, m
+@@ -515,14 +515,14 @@ mrb_funcall_with_block(mrb_state *mrb, m
      if (ci->argc > 0) {
        stack_copy(mrb->c->stack+1, argv, argc);
      }
@@ -49,3 +49,11 @@
  
      if (MRB_METHOD_CFUNC_P(m)) {
        int ai = mrb_gc_arena_save(mrb);
+ 
+       ci->acc = CI_ACC_DIRECT;
+       val = MRB_METHOD_CFUNC(m)(mrb, self);
+-      mrb->c->stack = mrb->c->ci->stackent;
++      //      mrb->c->stack = mrb->c->ci->stackent;
+       cipop(mrb);
+       mrb_gc_arena_restore(mrb, ai);
+     }
