@@ -631,8 +631,6 @@ grn_table_get_normalizer_options(grn_ctx *ctx,
 void *
 grn_table_cache_normalizer_options(grn_ctx *ctx,
                                    grn_obj *table,
-                                   /* TODO: Remove me. */
-                                   grn_obj *string,
                                    grn_table_module_open_options_func open_options_func,
                                    grn_close_func close_options_func,
                                    void *user_data)

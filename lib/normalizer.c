@@ -2288,7 +2288,6 @@ nfkc100_next(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
   if (table) {
     options = grn_table_cache_normalizer_options(ctx,
                                                  table,
-                                                 string,
                                                  nfkc100_open_options,
                                                  nfkc100_close_options,
                                                  NULL);
@@ -2350,7 +2349,6 @@ nfkc121_next(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
   if (table) {
     options = grn_table_cache_normalizer_options(ctx,
                                                  table,
-                                                 string,
                                                  nfkc121_open_options,
                                                  nfkc121_close_options,
                                                  NULL);

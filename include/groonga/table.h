@@ -288,11 +288,9 @@ grn_table_get_normalizer_options(grn_ctx *ctx,
                                  grn_obj *table,
                                  grn_obj *options);
 
-/* TODO: Remove string argument. It's needless. */
 GRN_API void *
 grn_table_cache_normalizer_options(grn_ctx *ctx,
                                    grn_obj *table,
-                                   grn_obj *string,
                                    grn_table_module_open_options_func open_options_func,
                                    grn_close_func close_options_func,
                                    void *user_data);
