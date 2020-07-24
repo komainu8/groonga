@@ -328,11 +328,12 @@ grn_mrb_bulk_cast(mrb_state *mrb, grn_obj *from, grn_obj *to, grn_id domain_id)
   grn_ctx *ctx = (grn_ctx *)mrb->ud;
   grn_rc rc;
 
+  grn_p(ctx, to);
   rc = grn_obj_reinit(ctx, to, domain_id, 0);
   if (rc == GRN_SUCCESS) {
     rc = grn_obj_cast(ctx, from, to, GRN_FALSE);
     if (rc != GRN_SUCCESS)
-    mrb_raisef(mrb, E_ARGUMENT_ERROR, "failed to object reinit:rc=%d", rc);
+      mrb_raisef(mrb, E_ARGUMENT_ERROR, "failed to object reinit:rc=%d, %x", rc, to);
   } else {
     mrb_raisef(mrb, E_ARGUMENT_ERROR,
                "failed to object reinit:rc=%d", rc);
