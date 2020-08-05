@@ -19,7 +19,7 @@ if PLATFORM_WIN32
 # value) with the glibc's implementation and the MSVCRT
 # implementation.
 AM_CPPFLAGS +=					\
-	-D__USE_MINGW_ANSI_STDIO=0
+	-D__USE_MINGW_ANSI_STDIO=1
 endif
 
 AM_CFLAGS =					\
