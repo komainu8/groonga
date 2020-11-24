@@ -188,20 +188,18 @@ jobs:
           ls ${VC_REDIST_VCRUNTIME}
           Copy-Item `
             ${VC_REDIST_VCRUNTIME} `
-            "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
-          Start-Sleep -s 3
-          ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+            "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+          ls "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           if (Test-Path ${VC_REDIST_VCRUNTIME_1}) {
             Copy-Item `
               ${VC_REDIST_VCRUNTIME_1} `
-              "${EnvFULL_:INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+              "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           }
           ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           Copy-Item `
             ${VC_REDIST_MSVCP} `
             "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
-          Start-Sleep -s 3
-          ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+          ls "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           Copy-Item `
             "${Env:GITHUB_WORKSPACE}\packages\windows\vcruntime\vs${{ matrix.vs-version }}\readme.txt" `
             ${Env:GROONGA_VC_REDIST_LICENSE_DIR}
