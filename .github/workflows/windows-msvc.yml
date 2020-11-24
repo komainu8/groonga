@@ -185,21 +185,24 @@ jobs:
           $VC_REDIST_VCRUNTIME_1 = "${VC_REDIST_DIR}\vcruntime140_1.dll"
           $VC_REDIST_MSVCP = "${VC_REDIST_DIR}\msvcp140.dll"
           ls "${VC_REDIST_DIR}"
+          ls ${VC_REDIST_VCRUNTIME}
           Copy-Item `
             ${VC_REDIST_VCRUNTIME} `
             "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+          ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           if (Test-Path ${VC_REDIST_VCRUNTIME_1}) {
             Copy-Item `
               ${VC_REDIST_VCRUNTIME_1} `
               "${EnvFULL_:INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           }
+          ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           Copy-Item `
             ${VC_REDIST_MSVCP} `
             "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+          ls "${EnvFULL_:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           Copy-Item `
             "${Env:GITHUB_WORKSPACE}\packages\windows\vcruntime\vs${{ matrix.vs-version }}\readme.txt" `
             ${Env:GROONGA_VC_REDIST_LICENSE_DIR}
-
           ls "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           $UCRT_REDIST_DIR = "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\${{ matrix.architecture }}"
           Copy-Item `
