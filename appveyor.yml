@@ -33,45 +33,45 @@ clone_depth: 10
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      VS_VERSION: 15
-      ARCH: amd64
-      JOB_TYPE: tagged
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      VS_VERSION: 14
-      ARCH: amd64
-      JOB_TYPE: tagged
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      VS_VERSION: 15
-      ARCH: x86
-      JOB_TYPE: tagged
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      VS_VERSION: 14
-      JOB_TYPE: tagged
-      ARCH: x86
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      VS_VERSION: 15
+#      ARCH: amd64
+#      JOB_TYPE: tagged
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      VS_VERSION: 14
+#      ARCH: amd64
+#      JOB_TYPE: tagged
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      VS_VERSION: 15
+#      ARCH: x86
+#      JOB_TYPE: tagged
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      VS_VERSION: 14
+#      JOB_TYPE: tagged
+#      ARCH: x86
 
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       VS_VERSION: 15
       ARCH: amd64
       JOB_TYPE: non-tag
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      VS_VERSION: 14
-      ARCH: amd64
-      JOB_TYPE: non-tag
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      VS_VERSION: 15
-      ARCH: x86
-      JOB_TYPE: non-tag
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      VS_VERSION: 14
-      JOB_TYPE: non-tag
-      ARCH: x86
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      VS_VERSION: 14
+#      ARCH: amd64
+#      JOB_TYPE: non-tag
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      VS_VERSION: 15
+#      ARCH: x86
+#      JOB_TYPE: non-tag
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      VS_VERSION: 14
+#      JOB_TYPE: non-tag
+#      ARCH: x86
 
 init:
   - ps: Set-WinSystemLocale ja-JP
   - ps: Start-Sleep -s 10
   - ps: Restart-Computer
-
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 install:
   - set PATH=C:\Ruby25-x64\bin;%PATH%
   - set PATH=C:\msys64\usr\bin;%PATH%
