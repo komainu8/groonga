@@ -67,8 +67,11 @@ jobs:
             autoconf-archive \
             devscripts \
             python3-pip \
-            qemu-user-static \
             ruby
+      - name: Install Qemu
+        run: |
+          wget https://launchpad.net/~ci-train-ppa-service/+archive/ubuntu/4535/+build/21459980/+files/qemu-user-static_4.2-3ubuntu6.17~focalppa1_amd64.deb
+          sudo dpkg -i qemu-user-static_4.2-3ubuntu6.17~focalppa1_amd64.deb
       - name: Install Sphinx
         run: |
           sudo pip3 install -v sphinx
