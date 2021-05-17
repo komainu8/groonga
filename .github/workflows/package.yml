@@ -68,6 +68,7 @@ jobs:
             devscripts \
             python3-pip \
             ruby
+      # This task for confirming qemu-user-static_4.2-3ubuntu6.17~focalppa1_amd64.deb operation
       - name: Install Qemu
         run: |
           wget https://launchpad.net/~ci-train-ppa-service/+archive/ubuntu/4535/+build/21459980/+files/qemu-user-static_4.2-3ubuntu6.17~focalppa1_amd64.deb
