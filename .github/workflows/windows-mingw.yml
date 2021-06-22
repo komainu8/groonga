@@ -3,104 +3,85 @@ on:
   - push
   - pull_request
 jobs:
-  test:
-    name: Test
-    runs-on: windows-2019
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        label:
+          - "MINGW64"
+          - "MINGW32"
+          - "UCRT64"
+          - "CLANG64"
+          - "CLANG32"
+        include:
+          - label: "MINGW64"
+            msystem: MINGW64
+            toolchain: mingw-w64-x86_64-toolchain
+            can-fail: false
+          - label: "MINGW32"
+            msystem: MINGW32
+            toolchain: mingw-w64-i686-toolchain
+            can-fail: false
+          - label: "UCRT64"
+            msystem: UCRT64
+            toolchain: mingw-w64-ucrt-x86_64-toolchain
+            can-fail: false
+          - label: "CLANG64"
+            msystem: CLANG64
+            toolchain: mingw-w64-clang-x86_64-toolchain
+            can-fail: true
+          - label: "CLANG32"
+            msystem: CLANG32
+            can-fail: true
+    name: ${{ matrix.msystem }}
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: MSYS
           update: true
           install: >-
-            autoconf
-            automake-wrapper
             git
-            make
-            mingw-w64-x86_64-arrow
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-libtool
-            mingw-w64-x86_64-mecab
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-python-pip
-            mingw-w64-x86_64-ruby
-            mingw-w64-x86_64-xxhash
-            mingw-w64-x86_64-zlib
-      - name: Generate configure
+            msys2-devel
+            base-devel
+            binutils
+            pactoys-git
+            ${{ matrix.toolchain }}
+
+      - name: Add staging repo
         shell: msys2 {0}
         run: |
-          ./autogen.sh
-      - name: Configure
-        shell: msys2 {0}
+          sed -i '1s|^|[staging]\nServer = https://repo.msys2.org/staging/\nSigLevel = Never\n[clang32]\nServer = https://repo.msys2.org/mingw/clang32/\n|' /etc/pacman.conf
+
+      - name: Update using staging
         run: |
-          mkdir ../groonga.build
-          cd ../groonga.build
-          ../groonga/configure \
-            --disable-benchmark \
-            --disable-groonga-httpd \
-            --enable-mruby \
-            --enable-shared-onigmo \
-            --prefix=/tmp/local \
-            --with-ruby
-      - name: Show config.log
-        shell: msys2 {0}
-        if: always()
+          msys2 -c 'pacman --noconfirm -Suuy'
+          msys2 -c 'pacman --noconfirm -Suu'
+
+      - name: Install clang32 toolchain
+        if: ${{ matrix.msystem == 'CLANG32' }}
         run: |
-          cat ../groonga.build/config.log
-      - name: Build
+          msys2 -c 'pacman --noconfirm --overwrite "*" -S --needed mingw-w64-clang-i686-toolchain'
+
+      - name: CI-Build
         shell: msys2 {0}
+        continue-on-error: ${{ matrix.can-fail }}
+        id: build
         run: |
-          cd ../groonga.build
-          make -j${NUMBER_OF_PROCESSORS}
-      - name: Install
-        shell: msys2 {0}
-        run: |
-          cd ../groonga.build
-          make install
-      - name: Install grntest
-        shell: msys2 {0}
-        run: |
-          git clone --depth 1 \
-            https://github.com/groonga/grntest.git \
-            ..\grntest
-          cd ..\grntest
-          /mingw64/bin/bundle.cmd install
-          /mingw64/bin/bundle.cmd exec rake install
-      - name: Install red-arrow
-        shell: msys2 {0}
-        run: |
-          gem install red-arrow
-      - name: "Test: command line"
-        shell: msys2 {0}
-        run: |
-          ruby test/command_line/run-test.rb \
-            --groonga-install-prefix="$(cygpath --windows /tmp/local)"
-      - name: "Test: HTTP: reference count"
-        shell: msys2 {0}
-        run: |
-          export GRN_ENABLE_REFERENCE_COUNT=yes
-          grntest \
-            --base-directory test\command \
-            --groonga "/tmp/local/bin/groonga.exe" \
-            --interface http \
-            --n-retries 2 \
-            --n-workers ${NUMBER_OF_PROCESSORS} \
-            --read-timeout=30 \
-            --timeout 60 \
-            test\command\suite
-      - name: "Test: HTTP: Apache Arrow: chunked"
-        shell: msys2 {0}
-        run: |
-          grntest \
-            --base-directory test\command \
-            --groonga "/tmp/local/bin/groonga.exe" \
-            --input-type apache-arrow \
-            --interface http \
-            --n-retries 2 \
-            --n-workers ${NUMBER_OF_PROCESSORS} \
-            --read-timeout=30 \
-            --timeout 360 \
-            --use-http-chunked \
-            test\command\suite
+          cd packages/windows
+          MINGW_ARCH=${{ matrix.msystem }} makepkg-mingw --noconfirm --noprogressbar --nocheck --syncdeps --rmdeps --cleanbuild
+
+      - name: "Upload binaries"
+        uses: actions/upload-artifact@v2
+        continue-on-error: ${{ matrix.can-fail }}
+        with:
+          name: ${{ matrix.msystem }}-packages
+          path: ./*.pkg.tar.*

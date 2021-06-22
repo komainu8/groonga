@@ -1,0 +1,68 @@
+# Maintainer: Hiroshi Hatake <cosmo0920.wp@gmail.com>
+
+_realname=groonga
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=11.0.3
+pkgrel=1
+pkgdesc="An opensource fulltext search engine (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64')
+url="http://groonga.org/"
+license=('LGPL2')
+options=('strip' 'staticlibs')
+source=(https://packages.groonga.org/source/${_realname}/${_realname}-${pkgver}.tar.gz{,.asc})
+depends=("${MINGW_PACKAGE_PREFIX}-arrow"
+         #"${MINGW_PACKAGE_PREFIX}-libevent"
+         "${MINGW_PACKAGE_PREFIX}-luajit"
+         "${MINGW_PACKAGE_PREFIX}-lz4"
+         "${MINGW_PACKAGE_PREFIX}-msgpack-c"
+         "${MINGW_PACKAGE_PREFIX}-onigmo"
+         "${MINGW_PACKAGE_PREFIX}-openssl"
+         "${MINGW_PACKAGE_PREFIX}-pcre"
+         "${MINGW_PACKAGE_PREFIX}-rapidjson"
+         "${MINGW_PACKAGE_PREFIX}-mecab"
+         "${MINGW_PACKAGE_PREFIX}-mecab-naist-jdic"
+         "${MINGW_PACKAGE_PREFIX}-zeromq"
+         "${MINGW_PACKAGE_PREFIX}-zlib"
+         "${MINGW_PACKAGE_PREFIX}-zstd")
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc")
+sha256sums=('de29cb5648e3c29873d343747d626a5efcb302357dc7bd82dc4df776e2de558c'
+            'SKIP')
+validpgpkeys=('2701F317CFCCCB975CADE9C2624CF77434839225') # Groonga Key <packages@groonga.org>
+
+build() {
+  [[ -d ${srcdir}/build-${CARCH} ]] && rm -rf ${srcdir}/build-${CARCH}
+  mkdir -p ${srcdir}/build-${CARCH} && cd ${srcdir}/build-${CARCH}
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --disable-libedit \
+    --with-mecab \
+    --with-onigmo=system \
+    --without-kytea \
+    --without-cutter \
+    --without-libevent \
+    --disable-benchmark \
+    --disable-groonga-httpd \
+    --enable-mruby
+
+  make
+}
+
+package() {
+  cd ${srcdir}/build-${CARCH}
+  make DESTDIR="${pkgdir}" install
+
+  local PREFIX_DEPS=$(cygpath -am ${MINGW_PREFIX})
+  pushd "${pkgdir}${MINGW_PREFIX}/lib/pkgconfig"
+  for pc in *.pc; do
+    sed -s "s|${PREFIX_DEPS}|${MINGW_PREFIX}|g" -i ${pc}
+  done
+  popd
+
+  install -Dm644 ${srcdir}/${_realname}-${pkgver}/COPYING "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
