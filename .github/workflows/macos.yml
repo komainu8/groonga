@@ -34,7 +34,7 @@ jobs:
           brew update || :
           brew bundle
           echo $path
-          ls /opt/homebrew/bin/
+          brew ls autoconf-archive
       - name: Generate configure
         if: |
           matrix.use-autotools
