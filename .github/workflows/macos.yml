@@ -33,6 +33,8 @@ jobs:
           brew unlink gcc@9
           brew update || :
           brew bundle
+          echo $path
+          ls /opt/homebrew/bin/
       - name: Generate configure
         if: |
           matrix.use-autotools
