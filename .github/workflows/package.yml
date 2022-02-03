@@ -40,11 +40,22 @@ jobs:
           cd ..
           git clone --depth 1 https://github.com/groonga/groonga.org.git
           git clone --depth 1 https://github.com/clear-code/cutter.git
-      - name: Detect nginx update
+      - name: Update nginx
         run: |
           upstream_version=`curl -s "https://nginx.org/en/CHANGES" | awk 'NR==2{print $4}'`
           bundled_version=`cat nginx_version`
-          test "${upstream_version}" = "${bundled_version}"
+          if [ "${upstream_version}" != "${bundled_version}" ]; then
+            cd vendor
+            ./update_nginx.sh ${upstream_version}
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -b update-nginx
+            git add ../nginx_version
+            git commit -m " nginx: update bundles version to ${upstream_version}"
+            git push orign update-nginx
+            gh pr create --title "$(git log -1 --oneline --pretty=format:'%s')" --body ""
+            exit 1
+          fi
       - name: Generate configure
         run: |
           ./autogen.sh
