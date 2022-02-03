@@ -51,7 +51,7 @@ jobs:
             git checkout -b update-nginx
             git add ../nginx_version
             git commit -m " nginx: update bundles version to ${upstream_version}"
-            git push orign update-nginx
+            git push origin update-nginx
             gh pr create --title "$(git log -1 --oneline --pretty=format:'%s')" --body ""
             exit 1
           fi
