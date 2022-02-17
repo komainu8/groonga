@@ -4,7 +4,6 @@ libmruby_la_SOURCES = \
 	../mruby-source/src/class.c \
 	../mruby-source/src/codedump.c \
 	../mruby-source/src/compar.c \
-	../mruby-source/src/crc.c \
 	../mruby-source/src/debug.c \
 	../mruby-source/src/dump.c \
 	../mruby-source/src/enum.c \
