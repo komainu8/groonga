@@ -2,9 +2,7 @@ name: "Windows MinGW"
 on:
   push:
     branches:
-      - master
-      - 'maintenance/**'
-      - ci-mingw
+      - '*'
     tags:
       - '*'
   pull_request:
