@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - 'maintenance/**'
+      - 'detect-nginx-update'
     tags:
       - '*'
   pull_request:
@@ -21,6 +22,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0
       - name: Install dependencies
         run: |
           sudo apt update -o="APT::Acquire::Retries=3"
@@ -43,6 +45,22 @@ jobs:
           cd ..
           git clone --depth 1 https://github.com/groonga/groonga.org.git
           git clone --depth 1 https://github.com/clear-code/cutter.git
+      - name: Create nginx update request
+        run: |
+          upstream_version=`curl -s "https://nginx.org/en/CHANGES" | awk 'NR==2{print $4}'`
+          bundled_version=`cat nginx_version`
+          pr_branch_name=update-bundled-nginx
+          if [ "${upstream_version}" != "${bundled_version}" ]; then
+            git switch -c ${pr_branch_name}
+            git push -u origin ${pr_branch_name}
+            pushd vendor
+            ./update_nginx.sh ${upstream_version}
+            gh pr create --fill --draft --title "nginx: update bundles version ${upstream_version}"
+            git switch master
+            popd
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate configure
         run: |
           ./autogen.sh
