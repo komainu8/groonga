@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - 'maintenance/**'
+      - ci-leak-check
     tags:
       - '*'
     paths:
