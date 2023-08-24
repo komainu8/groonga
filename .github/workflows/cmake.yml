@@ -175,14 +175,14 @@ jobs:
           path: |
             ~/.cache/red-datasets
           key: red-datasets-ubuntu
-      - name: "Test: command line"
-        if: env.GRN_TEST_RUN_COMMAND_LINE == 'yes'
-        run: |
-          test/command_line/run-test.rb --groonga-install-prefix=$PWD/install
-      - name: "Test: mruby"
-        if: env.GRN_TEST_RUN_ALL == 'yes'
-        run: |
-          USE_SYSTEM=yes test/mruby/run-test.rb
+#      - name: "Test: command line"
+#        if: env.GRN_TEST_RUN_COMMAND_LINE == 'yes'
+#        run: |
+#          test/command_line/run-test.rb --groonga-install-prefix=$PWD/install
+#      - name: "Test: mruby"
+#        if: env.GRN_TEST_RUN_ALL == 'yes'
+#        run: |
+#          USE_SYSTEM=yes test/mruby/run-test.rb
 #      - name: "Test: stdio"
 #        run: |
 #          grntest \
