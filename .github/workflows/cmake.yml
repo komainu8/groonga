@@ -254,6 +254,8 @@ jobs:
             --reporter=mark \
             --input-type=apache-arrow \
             --interface=http \
+            --test-suite=select/filter/near_phrase_product \
+            --test-suite=sharding/logical_select/drilldown/labeled/sort_keys \
             test/command/suite
 #      - name: "Test: HTTP: command: POST"
 #        if: env.GRN_TEST_RUN_ALL == 'yes'
