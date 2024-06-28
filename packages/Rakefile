@@ -45,6 +45,8 @@ class GroongaPackageTask < PackagesGroongaOrgPackageTask
 
   def docker_build_options(os, architecture)
     [
+      "--platform",
+      "linux/arm64/v8",
       "--build-arg",
       "APACHE_ARROW_VERSION=#{detect_target_apache_arrow_version}",
     ]
