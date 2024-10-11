@@ -349,8 +349,29 @@ GRN_API grn_command_version
 grn_ctx_get_command_version(grn_ctx *ctx);
 GRN_API grn_rc
 grn_ctx_set_command_version(grn_ctx *ctx, grn_command_version version);
+/**
+ * \param ctx The context object.
+ *
+ * \return The threshold to determine whether search strategy escalation is used
+ *         or not.
+ *
+ * \see
+ * https://groonga.org/docs/reference/commands/select.html#match-escalation-threshold
+ */
 GRN_API int64_t
 grn_ctx_get_match_escalation_threshold(grn_ctx *ctx);
+/**
+ * \brief Set the threshold to determine whether search strategy escalation is
+ *        used or not.
+ *
+ * \param ctx The context object.
+ * \param threshold New threshold.
+ *
+ * \return \ref GRN_SUCCESS.
+ *
+ * \see
+ * https://groonga.org/docs/reference/commands/select.html#match-escalation-threshold
+ */
 GRN_API grn_rc
 grn_ctx_set_match_escalation_threshold(grn_ctx *ctx, int64_t threshold);
 GRN_API grn_bool
@@ -361,8 +382,26 @@ GRN_API int32_t
 grn_ctx_get_n_workers(grn_ctx *ctx);
 GRN_API grn_rc
 grn_ctx_set_n_workers(grn_ctx *ctx, int32_t n_workers);
+/**
+ * \return The default threshold to determine whether search strategy escalation
+ *         is used or not.
+ *
+ * \see
+ * https://groonga.org/docs/reference/commands/select.html#match-escalation-threshold
+ */
 GRN_API int64_t
 grn_get_default_match_escalation_threshold(void);
+/**
+ * \brief Set the default threshold to determine whether search strategy
+ *        escalation is used or not.
+ *
+ * \param threshold New default threshold.
+ *
+ * \return \ref GRN_SUCCESS.
+ *
+ * \see
+ * https://groonga.org/docs/reference/commands/select.html#match-escalation-threshold
+ */
 GRN_API grn_rc
 grn_set_default_match_escalation_threshold(int64_t threshold);
 GRN_API int32_t
@@ -1157,7 +1196,7 @@ grn_obj_reinit(grn_ctx *ctx, grn_obj *obj, grn_id domain, uint8_t flags);
  *
  * If the decreased reference count is zero, the object is closed.
  */
-GRN_API void
+GRN_API grn_rc
 grn_obj_unlink(grn_ctx *ctx, grn_obj *obj);
 GRN_API grn_rc
 grn_obj_refer(grn_ctx *ctx, grn_obj *obj);
@@ -1184,33 +1223,164 @@ grn_obj_unref_recursive_dependent(grn_ctx *ctx, grn_obj *obj);
 GRN_API grn_user_data *
 grn_obj_user_data(grn_ctx *ctx, grn_obj *obj);
 
+/**
+ * \brief Set the callback function when finalizing the object.
+ *
+ * \param ctx The context object.
+ * \param obj Target object. Table, table cursor, column, procedure, and
+ *            expression can be specified.
+ * \param func Callback function when finalizing.
+ *
+ * \return \ref GRN_SUCCESS on success, \ref GRN_INVALID_ARGUMENT if `obj`
+ *         is not table, table cursor, column, procedure, or expression.
+ */
 GRN_API grn_rc
 grn_obj_set_finalizer(grn_ctx *ctx, grn_obj *obj, grn_proc_func *func);
-
+/**
+ * \brief Return the file path associated with an object.
+ *
+ * \param ctx The context object.
+ * \param obj The object whose file path is to be retrieved.
+ *
+ * \return The file path on success, `NULL` if the object is temporary.
+ */
 GRN_API const char *
 grn_obj_path(grn_ctx *ctx, grn_obj *obj);
+/**
+ * \brief Return an object's name by storing it in `namebuf`.
+ *
+ *        If the object has a name and `buf_size` is greater than or equal to
+ *        the length of the name, the name is copied into `namebuf`.
+ *
+ *        If the length of the name exceeds `buf_size`, the name is not copied
+ *        into `namebuf`, but the length of the name is still returned.
+ *
+ *        The maximum possible length of the name is limited by
+ *        \ref GRN_TABLE_MAX_KEY_SIZE.
+ *
+ * \param ctx The context object.
+ * \param obj The object whose name is to be retrieved.
+ * \param namebuf A buffer allocated by the caller to store the object's name.
+ * \param buf_size The size of `namebuf` in bytes.
+ *
+ * \return The length of the object's name. Returns `0` if the object is unnamed
+ *         or `NULL`.
+ */
 GRN_API int
 grn_obj_name(grn_ctx *ctx, grn_obj *obj, char *namebuf, int buf_size);
 
 GRN_API int
 grn_column_name(grn_ctx *ctx, grn_obj *obj, char *namebuf, int buf_size);
 
+/**
+ * \brief Retrieve the value range based on the ID associated with an object.
+ *
+ *        For example, it may return \ref GRN_DB_INT32 from \ref
+ *        grn_builtin_type to indicate that the object operates within the
+ *        integer range.
+ *
+ * \param ctx The context object.
+ * \param obj The target object whose range ID is to be returned.
+ *
+ * \return The ID of the range object. Returns \ref GRN_ID_NIL if no range is
+ *         associated or the object is `NULL`.
+ */
 GRN_API grn_id
 grn_obj_get_range(grn_ctx *ctx, grn_obj *obj);
 
 #define GRN_OBJ_GET_DOMAIN(obj)                                                \
   ((obj)->header.type == GRN_TABLE_NO_KEY ? GRN_ID_NIL : (obj)->header.domain)
 
+/**
+ * \brief Free allocatable memory occupied by an object based on a threshold.
+ *
+ * \note This function is not implemented yet.
+ *       The \ref grn_obj_expire function is intended to serve as a
+ *       generic version of grn_ii_expire() and grn_io_expire().
+ *
+ * \param ctx The context object.
+ * \param obj The target object whose memory is to be managed.
+ * \param threshold The threshold value used as a benchmark for freeing memory
+ *                  spaces.
+ *
+ * \return \ref GRN_SUCCESS on success.
+ */
 GRN_API int
 grn_obj_expire(grn_ctx *ctx, grn_obj *obj, int threshold);
+/**
+ * \brief Check the integrity of the file corresponding to an object.
+ *
+ * \note This function is not implemented yet.
+ *
+ * \param ctx The context object.
+ * \param obj The target object whose file is to be checked.
+ *
+ * \return \ref GRN_SUCCESS on success.
+ */
 GRN_API int
 grn_obj_check(grn_ctx *ctx, grn_obj *obj);
+/**
+ * \brief Lock an object with a specified timeout.
+ *
+ * \param ctx The context object.
+ * \param obj The target object to lock.
+ * \param id The ID of the target object.
+ * \param timeout The maximum time to wait for the lock, in seconds.
+ *
+ * \return \ref GRN_SUCCESS on success, the appropriate \ref grn_rc on error.
+ *         For example, \ref GRN_RESOURCE_DEADLOCK_AVOIDED is returned if the
+ *         lock could not be acquired within the specified timeout.
+ */
 GRN_API grn_rc
 grn_obj_lock(grn_ctx *ctx, grn_obj *obj, grn_id id, int timeout);
+/**
+ * \brief Unlock an object.
+ *
+ * Unlike \ref grn_obj_clear_lock, which forcefully resets the lock count to
+ * zero, this function decrements the lock count of an object by one.
+ *
+ * \note Locks are managed using a counter mechanism where each lock acquisition
+ *       increments the count by one, and each unlock operation decrements it by
+ *       one. When the lock count reaches zero, the object is considered
+ *       unlocked.
+ *
+ * \param ctx The context object.
+ * \param obj The target object to unlock.
+ * \param id The ID of the target object.
+ *
+ * \return \ref GRN_SUCCESS on success.
+ */
 GRN_API grn_rc
 grn_obj_unlock(grn_ctx *ctx, grn_obj *obj, grn_id id);
+/**
+ * \brief Forcefully clear locks on an object.
+ *
+ * Unlike \ref grn_obj_unlock, which decrements the lock count by one,
+ * this function forcefully resets the lock count of an object to zero,
+ * unlocking it regardless of the current lock count.
+ *
+ * \attention In general you should not use this function. Forcefully
+ *            clearing locks might lead to data corruption or
+ *            inconsistencies within the database. Use it only
+ *            when absolutely necessary and ensure that you understand
+ *            the potential consequences.
+ *
+ * \param ctx The context object.
+ * \param obj The target object whose lock is to be cleared.
+ *
+ * \return \ref GRN_SUCCESS on success.
+ */
 GRN_API grn_rc
 grn_obj_clear_lock(grn_ctx *ctx, grn_obj *obj);
+/**
+ * \brief Check if an object is currently locked.
+ *
+ * \param ctx The context object.
+ * \param obj The target object whose lock status is to be checked.
+ *
+ * \return `0` if there are no locks. Return the number of acquired locks
+ *         if the object or any of its related sub-objects are currently locked.
+ */
 GRN_API unsigned int
 grn_obj_is_locked(grn_ctx *ctx, grn_obj *obj);
 GRN_API grn_rc
@@ -1224,6 +1394,15 @@ grn_obj_flush_only_opened(grn_ctx *ctx, grn_obj *obj);
 GRN_API int
 grn_obj_defrag(grn_ctx *ctx, grn_obj *obj, int threshold);
 
+/**
+ * \brief Return the database to which `obj` belongs.
+ *
+ * \param ctx The context object.
+ * \param obj Target object.
+ *
+ * \return The database object to which `obj` belongs, `NULL` if `obj` doesn't
+ *         belong to any database.
+ */
 GRN_API grn_obj *
 grn_obj_db(grn_ctx *ctx, grn_obj *obj);
 
@@ -1292,6 +1471,28 @@ struct _grn_search_optarg {
   grn_id *query_domain;
 };
 
+/**
+ * \brief Search for `obj` in `query`.
+ *
+ * \param ctx The context object.
+ * \param obj The object to be searched.
+ * \param query Search query.
+ * \param res The table to store results.
+ * \param op Logical operation of the table stored in `res` and the table of
+ *           the search result.
+ *           - \ref GRN_OP_OR
+ *           - \ref GRN_OP_AND
+ *           - \ref GRN_OP_AND_NOT
+ *           - \ref GRN_OP_ADJUST
+ * \param optarg Search options. For example, you can specify the search mode in
+ *               \ref grn_search_optarg::mode.
+ *               If \ref GRN_OP_EQUAL is specified for
+ *               \ref grn_search_optarg::mode, it searching for equal record.
+ *
+ * \return \ref GRN_SUCCESS on success, the appropriate \ref grn_rc on error.
+ *         For example, \ref GRN_INVALID_ARGUMENT is returned if `obj` is
+ *         `NULL`.
+ */
 GRN_API grn_rc
 grn_obj_search(grn_ctx *ctx,
                grn_obj *obj,

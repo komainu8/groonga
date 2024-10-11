@@ -310,9 +310,44 @@ jobs:
             --interface=http \
             test/command/suite
 
+  docker:
+    name: Docker
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - "alpine-3.20"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Login to GitHub Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull
+        continue-on-error: true
+        run: |
+          docker compose pull ${{ matrix.target }}
+      - name: Build
+        run: |
+          docker compose build ${{ matrix.target }}
+      - name: Run
+        run: |
+          docker compose run ${{ matrix.target }}
+      - name: Push
+        if: github.ref_name == 'main'
+        continue-on-error: true
+        run: |
+          docker compose push ${{ matrix.target }}
+
   macos:
     name: macOS
-    runs-on: macos-12
+    runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -374,26 +409,30 @@ jobs:
             --groonga-install-prefix=/usr/local \
             -v
       - name: "Test: mruby"
+        # TODO: Disabled temporarily as a workaround for the rpath issue in Rroonga.
+        if: false
         run: |
           USE_SYSTEM=yes test/mruby/run-test.rb
       - name: "Test: stdio"
         run: |
-          grntest \
-            --base-dir test/command \
-            --n-retries=2 \
-            --read-timeout=30 \
-            --reporter=mark \
-            test/command/suite
+          DYLD_LIBRARY_PATH=/usr/local/lib \
+            grntest \
+              --base-dir test/command \
+              --n-retries=2 \
+              --read-timeout=30 \
+              --reporter=mark \
+              test/command/suite
       - name: "Test: HTTP: load: Apache Arrow"
         run: |
-          grntest \
-            --base-dir test/command \
-            --n-retries=2 \
-            --read-timeout=30 \
-            --reporter=mark \
-            --input-type=apache-arrow \
-            --interface=http \
-            test/command/suite
+          DYLD_LIBRARY_PATH=/usr/local/lib \
+            grntest \
+              --base-dir test/command \
+              --n-retries=2 \
+              --read-timeout=30 \
+              --reporter=mark \
+              --input-type=apache-arrow \
+              --interface=http \
+              test/command/suite
 
   windows-mingw:
     name: Windows MinGW
@@ -719,9 +758,11 @@ jobs:
 
           $VC_REDIST_VERSION = (Get-Content "${Env:VC_PREFIX}\Auxiliary\Build\Microsoft.VCRedistVersion.default.txt")
           $VC_REDIST_DIR = "${Env:VC_PREFIX}\Redist\MSVC\${VC_REDIST_VERSION}\${Env:VC_ARCHITECTURE}\Microsoft.VC${{ matrix.vc-toolset-version }}.CRT"
+          $VC_REDIST_DIR_OPEN_MP = "${Env:VC_PREFIX}\Redist\MSVC\${VC_REDIST_VERSION}\${Env:VC_ARCHITECTURE}\Microsoft.VC${{ matrix.vc-toolset-version }}.OpenMP"
           $VC_REDIST_VCRUNTIME = "${VC_REDIST_DIR}\vcruntime140.dll"
           $VC_REDIST_VCRUNTIME_1 = "${VC_REDIST_DIR}\vcruntime140_1.dll"
           $VC_REDIST_MSVCP = "${VC_REDIST_DIR}\msvcp140.dll"
+          $VC_REDIST_VCOMP = "${VC_REDIST_DIR_OPEN_MP}\vcomp140.dll"
           Copy-Item `
             ${VC_REDIST_VCRUNTIME} `
             "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
@@ -732,6 +773,9 @@ jobs:
           }
           Copy-Item `
             ${VC_REDIST_MSVCP} `
+            "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
+          Copy-Item `
+            ${VC_REDIST_VCOMP} `
             "${Env:FULL_INSTALL_FOLDER_WITH_VCRUNTIME}\bin"
           Copy-Item `
             "${Env:GITHUB_WORKSPACE}\packages\windows\vcruntime\vs${{ matrix.vs-version }}\readme.txt" `

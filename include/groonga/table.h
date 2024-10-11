@@ -140,11 +140,38 @@ grn_table_get(grn_ctx *ctx,
  */
 GRN_API grn_id
 grn_table_at(grn_ctx *ctx, grn_obj *table, grn_id id);
+/**
+ * \brief Execute longest common prefix (LCP) search and return ID found.
+ *
+ * \details Execute longest common prefix search if the table is
+ *          \ref GRN_TABLE_PAT_KEY or \ref GRN_TABLE_DAT_KEY.
+ *          If the table is \ref GRN_TABLE_HASH_KEY, search by exact match.
+ *
+ * \param ctx The context object.
+ * \param table The table.
+ * \param key Search key.
+ * \param key_size Length of `key`.
+ *
+ * \return ID on success, \ref GRN_ID_NIL on not found or error.
+ */
 GRN_API grn_id
 grn_table_lcp_search(grn_ctx *ctx,
                      grn_obj *table,
                      const void *key,
                      unsigned int key_size);
+/**
+ * \brief Get the key assigned to the ID.
+ *        If the size of the key found is larger than `buf_size`, it is not
+ *        stored in `keybuf`.
+ *
+ * \param ctx The context object.
+ * \param table The table.
+ * \param id The ID to be found.
+ * \param keybuf Buffer to store the record key.
+ * \param buf_size Size of `keybuf` in bytes.
+ *
+ * \return Key size of the record on success, `0` on not existed.
+ */
 GRN_API int
 grn_table_get_key(
   grn_ctx *ctx, grn_obj *table, grn_id id, void *keybuf, int buf_size);
@@ -178,6 +205,20 @@ grn_table_delete(grn_ctx *ctx,
  */
 GRN_API grn_rc
 grn_table_delete_by_id(grn_ctx *ctx, grn_obj *table, grn_id id);
+/**
+ * \brief Update the key of the record matching ID in the table.
+ *        This operation supports only \ref GRN_TABLE_DAT_KEY.
+ *
+ * \param ctx The context object.
+ * \param table The \ref GRN_TABLE_DAT_KEY table.
+ * \param id ID of record to be updated.
+ * \param dest_key New key.
+ * \param dest_key_size Size of `dest_key` in bytes.
+ *
+ * \return \ref GRN_SUCCESS on success, the appropriate \ref grn_rc on error.
+ *         For example, \ref GRN_OPERATION_NOT_PERMITTED is returned if the
+ *         table other than \ref GRN_TABLE_DAT_KEY is specified.
+ */
 GRN_API grn_rc
 grn_table_update_by_id(grn_ctx *ctx,
                        grn_obj *table,
@@ -708,6 +749,20 @@ struct _grn_table_group_result {
   uint32_t n_aggregators;
 };
 
+/**
+ * \brief Group the records in the table.
+ *
+ * \param ctx The context object.
+ * \param table The table.
+ * \param keys Array of keys for grouping.
+ * \param n_keys Number of elements in `keys` array.
+ * \param results Array to store the results of grouping.
+ * \param n_results Number of elements in `results` array.
+ *
+ * \return \ref GRN_SUCCESS on success, the appropriate \ref grn_rc on error.
+ *         For example, \ref GRN_INVALID_ARGUMENT is returned if `table` is
+ *         `NULL`.
+ */
 GRN_API grn_rc
 grn_table_group(grn_ctx *ctx,
                 grn_obj *table,
@@ -721,6 +776,26 @@ grn_table_group_keys_parse(grn_ctx *ctx,
                            const char *raw_sort_keys,
                            int32_t raw_sort_keys_size,
                            uint32_t *n_keys);
+/**
+ * \brief Execute the set operation of `table1` and `table2` according to
+ *        the specification of `op` and store the result into `res`.
+ *
+ * \attention The table specified in `res` will be destructed.
+ *
+ * \param ctx The context object.
+ * \param table1 The table.
+ * \param table2 The table.
+ * \param res Specify `table1` or `table2`.
+ * \param op Type of operation.
+ *           - \ref GRN_OP_OR
+ *           - \ref GRN_OP_AND
+ *           - \ref GRN_OP_AND_NOT
+ *           - \ref GRN_OP_ADJUST
+ *
+ * \return \ref GRN_SUCCESS on success, the appropriate \ref grn_rc on error.
+ *         For example, \ref GRN_INVALID_ARGUMENT is returned if `table1` is
+ *         `NULL`.
+ */
 GRN_API grn_rc
 grn_table_setoperation(grn_ctx *ctx,
                        grn_obj *table1,

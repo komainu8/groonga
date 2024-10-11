@@ -24,7 +24,7 @@
 #include <math.h>
 
 static uint64_t grn_index_sparsity = 10;
-static grn_bool grn_index_chunk_split_enable = GRN_TRUE;
+static bool grn_index_chunk_split_enable = true;
 
 void
 grn_index_column_init_from_env(void)
@@ -50,9 +50,9 @@ grn_index_column_init_from_env(void)
                grn_index_chunk_split_enable_env,
                GRN_ENV_BUFFER_SIZE);
     if (strcmp(grn_index_chunk_split_enable_env, "no") == 0) {
-      grn_index_chunk_split_enable = GRN_FALSE;
+      grn_index_chunk_split_enable = false;
     } else {
-      grn_index_chunk_split_enable = GRN_TRUE;
+      grn_index_chunk_split_enable = true;
     }
   }
 }
@@ -176,7 +176,7 @@ grn_index_column_build(grn_ctx *ctx, grn_obj *index_column)
 
   grn_table_flags lexicon_flags;
   grn_ii *ii = (grn_ii *)index_column;
-  grn_bool use_grn_ii_build;
+  bool use_grn_ii_build;
   grn_obj *tokenizer = NULL;
   grn_table_get_info(ctx,
                      ii->lexicon,
@@ -188,10 +188,10 @@ grn_index_column_build(grn_ctx *ctx, grn_obj *index_column)
   switch (lexicon_flags & GRN_OBJ_TABLE_TYPE_MASK) {
   case GRN_OBJ_TABLE_PAT_KEY :
   case GRN_OBJ_TABLE_DAT_KEY :
-    use_grn_ii_build = GRN_TRUE;
+    use_grn_ii_build = true;
     break;
   default :
-    use_grn_ii_build = GRN_FALSE;
+    use_grn_ii_build = false;
     break;
   }
   const grn_column_flags flags = grn_ii_get_flags(ctx, ii);
@@ -200,7 +200,7 @@ grn_index_column_build(grn_ctx *ctx, grn_obj *index_column)
        !GRN_TYPE_IS_TEXT_FAMILY(ii->lexicon->header.domain))) {
     /* TODO: Support offline index construction for WITH_POSITION
      * index against UInt32 vector column. */
-    use_grn_ii_build = GRN_FALSE;
+    use_grn_ii_build = false;
   }
 
   size_t n_columns = DB_OBJ(index_column)->source_size / sizeof(grn_id);
@@ -306,8 +306,8 @@ typedef struct {
   struct {
     char name[GRN_TABLE_MAX_KEY_SIZE];
     int name_size;
-    grn_bool with_section;
-    grn_bool with_position;
+    bool with_section;
+    bool with_position;
     uint32_t n_elements;
   } index;
   bool have_tokenizer;
@@ -322,7 +322,7 @@ typedef struct {
     grn_id token_id;
     grn_id diff_id;
     grn_posting posting;
-    grn_bool is_new_diff;
+    bool is_new_diff;
   } current;
   struct {
     grn_obj value;
@@ -512,8 +512,8 @@ grn_index_column_diff_compare_posting(grn_ctx *ctx,
                                       grn_index_column_diff_data *data,
                                       const grn_posting *posting)
 {
-  const grn_bool with_section = data->index.with_section;
-  const grn_bool with_position = data->index.with_position;
+  const bool with_section = data->index.with_section;
+  const bool with_position = data->index.with_position;
   const grn_posting *current_posting = &(data->current.posting);
 
   if (posting->rid < current_posting->rid) {
@@ -600,8 +600,8 @@ grn_index_column_diff_posting_list_fin(grn_ctx *ctx,
 
   grn_ii_cursor *cursor = posting_list->cursor;
   if (cursor) {
-    const grn_bool with_section = data->index.with_section;
-    const grn_bool with_position = data->index.with_position;
+    const bool with_section = data->index.with_section;
+    const bool with_position = data->index.with_position;
     if (with_position) {
       while (!posting_list->need_cursor_next ||
              grn_ii_cursor_next(ctx, cursor)) {
@@ -772,8 +772,8 @@ grn_index_column_diff_process_token_id(grn_ctx *ctx,
     grn_index_column_diff_posting_list_init(ctx, data, posting_list);
   }
 
-  const grn_bool with_section = data->index.with_section;
-  const grn_bool with_position = data->index.with_position;
+  const bool with_section = data->index.with_section;
+  const bool with_position = data->index.with_position;
 
   if (posting_list->last_posting.tf > 0) {
     const grn_index_column_diff_compared compared =
@@ -815,7 +815,7 @@ grn_index_column_diff_process_token_id(grn_ctx *ctx,
   for (size_t i = look_ahead_offset; i < n_postings; i++) {
     const size_t offset = i * data->n_posting_elements;
     const uint32_t *raw_posting = raw_postings + offset;
-    grn_posting posting;
+    grn_posting posting = {0};
     size_t i = 0;
     posting.rid = raw_posting[i++];
     if (with_section) {
@@ -1016,7 +1016,7 @@ grn_index_column_diff_process_token(grn_ctx *ctx,
     return;
   }
 
-  const grn_bool with_position = data->index.with_position;
+  const bool with_position = data->index.with_position;
   while (grn_token_cursor_get_status(ctx, token_cursor) ==
          GRN_TOKEN_CURSOR_DOING) {
     data->current.token_id = grn_token_cursor_next(ctx, token_cursor);
@@ -1055,7 +1055,7 @@ grn_index_column_diff_compute(grn_ctx *ctx,
     grn_index_column_diff_progress(ctx, data);
     for (size_t i = 0; i < n_source_columns; i++) {
       grn_obj *source = GRN_PTR_VALUE_AT(source_columns, i);
-      const grn_bool is_reference = grn_obj_is_reference_column(ctx, source);
+      const bool is_reference = grn_obj_is_reference_column(ctx, source);
 
       data->current.posting.rid = id;
       data->current.posting.sid = (uint32_t)(i + 1);

@@ -677,7 +677,7 @@ proc_status(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
   grn_timeval now;
   grn_cache *cache;
   grn_cache_statistics statistics;
-  int n_elements = 15;
+  int n_elements = 17;
 #ifdef GRN_WITH_APACHE_ARROW
   n_elements++;
 #endif
@@ -724,7 +724,7 @@ proc_status(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
   }
   GRN_OUTPUT_CSTR("features");
   {
-    const int n_features = 19;
+    const int n_features = 20;
     GRN_OUTPUT_MAP_OPEN("features", n_features);
 
     GRN_OUTPUT_CSTR("nfkc");
@@ -853,6 +853,13 @@ proc_status(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
     GRN_OUTPUT_BOOL(false);
 #endif
 
+    GRN_OUTPUT_CSTR("llama.cpp");
+#ifdef GRN_WITH_LLAMA_CPP
+    GRN_OUTPUT_BOOL(true);
+#else
+    GRN_OUTPUT_BOOL(false);
+#endif
+
     GRN_OUTPUT_CSTR("back_trace");
     GRN_OUTPUT_BOOL(grn_is_back_trace_enable());
 
@@ -888,6 +895,18 @@ proc_status(grn_ctx *ctx, int nargs, grn_obj **args, grn_user_data *user_data)
   GRN_OUTPUT_INT32(grn_ctx_get_n_workers(ctx));
   GRN_OUTPUT_CSTR("default_n_workers");
   GRN_OUTPUT_INT32(grn_get_default_n_workers());
+  GRN_OUTPUT_CSTR("os");
+#ifdef HOST_OS
+  GRN_OUTPUT_CSTR(HOST_OS);
+#else
+  GRN_OUTPUT_CSTR("Unknown");
+#endif
+  GRN_OUTPUT_CSTR("cpu");
+#ifdef HOST_CPU
+  GRN_OUTPUT_CSTR(HOST_CPU);
+#else
+  GRN_OUTPUT_CSTR("unknown");
+#endif
   GRN_OUTPUT_MAP_CLOSE();
 
 #ifdef GRN_WITH_MEMORY_DEBUG
@@ -4307,10 +4326,10 @@ func_in_values(grn_ctx *ctx,
   return found;
 }
 
-static grn_bool
+static bool
 is_reference_type_column(grn_ctx *ctx, grn_obj *column)
 {
-  grn_bool is_reference_type;
+  bool is_reference_type;
   grn_obj *range;
 
   range = grn_ctx_at(ctx, grn_obj_get_range(ctx, column));
@@ -4318,10 +4337,10 @@ is_reference_type_column(grn_ctx *ctx, grn_obj *column)
   case GRN_TABLE_HASH_KEY:
   case GRN_TABLE_PAT_KEY:
   case GRN_TABLE_DAT_KEY:
-    is_reference_type = GRN_TRUE;
+    is_reference_type = true;
     break;
   default:
-    is_reference_type = GRN_FALSE;
+    is_reference_type = false;
     break;
   }
   grn_obj_unlink(ctx, range);
@@ -4846,7 +4865,7 @@ proc_range_filter(grn_ctx *ctx,
                                              GRN_ID_NIL,
                                              index_cursor_flags);
         while ((posting = grn_index_cursor_next(ctx, index_cursor, NULL))) {
-          grn_bool result_boolean = GRN_FALSE;
+          bool result_boolean = false;
 
           if (filter_expr) {
             grn_obj *result;
@@ -4857,7 +4876,7 @@ proc_range_filter(grn_ctx *ctx,
             }
             result_boolean = grn_obj_is_true(ctx, result);
           } else {
-            result_boolean = GRN_TRUE;
+            result_boolean = true;
           }
 
           if (result_boolean) {

@@ -48,6 +48,8 @@ Specify option::
 
   NormalizerNFKC150("unify_katakana_bu_sound", true)
 
+  NormalizerNFKC150("unify_to_katakana", true)
+
   NormalizerNFKC150("unify_to_romaji", true)
 
   NormalizerNFKC150("remove_symbol", true)
@@ -69,6 +71,12 @@ Specify option::
   NormalizerNFKC150("unify_kana_prolonged_sound_mark", true)
 
   NormalizerNFKC150("unify_kana_hyphen", true)
+
+  NormalizerNFKC150("unify_latin_alphabet_with", true)
+
+.. versionadded:: 14.0.7
+
+  :ref:`normalizer-nfkc150-unify-latin-alphabet-with` is added.
 
 .. versionadded:: 13.0.1
 
@@ -169,6 +177,13 @@ This option enables normalize "ヴァヴィヴゥヴェヴォ" to "ブ" as below
 .. include:: ../../example/reference/normalizers/normalizer-nfkc150-unify-katakana-bu-sounds.log
 .. normalize   'NormalizerNFKC150("unify_katakana_bu_sound", true)'   "ヴァヴィヴヴェヴォヴ"   WITH_TYPES
 
+Here is an example of :ref:`normalizer-nfkc150-unify-to-katakana` option.
+This option normalizes hiragana to katakana.
+
+.. groonga-command
+.. include:: ../../example/reference/normalizers/normalizer-nfkc150-unify-to-katakana.log
+.. normalize   'NormalizerNFKC150("unify_to_katakana", true)'   "ゔぁゔぃゔゔぇゔぉ"   WITH_TYPES
+
 Here is an example of :ref:`normalizer-nfkc150-unify-to-romaji` option.
 This option enables normalize hiragana and katakana to romaji as below.
 
@@ -253,8 +268,20 @@ And a previous kana letter is "ン" , "-" is normalized to "ン".
 .. include:: ../../example/reference/normalizers/normalizer-nfkc150-unify-kana-hyphen.log
 .. normalize   'NormalizerNFKC150("unify_kana_hyphen", true)'   "カ-キ-ク-ケ-コ-"   WITH_TYPES
 
+Here is an example of :ref:`normalizer-nfkc150-unify-latin-alphabet-with` option.
+This option enables that alphabets with diacritical mark and alphabets without diacritical mark regarded as the same character as below.
+
+However, this feature focus on only LATIN (SMALL|CAPITAL) LETTER X WITH XXX. It doesn't support LATIN (SMALL|CAPITAL) LETTER X + COMBINING XXX characters.
+
+.. groonga-command
+.. include:: ../../example/reference/normalizers/normalizer-nfkc150-unify-latin-alphabet-with.log
+.. normalize   'NormalizerNFKC150("unify_latin_alphabet_with", true)'   "ngoằn"   WITH_TYPES
+
 Advanced usage
 ^^^^^^^^^^^^^^
+
+With ``TokenMecab``
+"""""""""""""""""""
 
 You can output romaji of specific a part of speech with using to combine
 ``TokenMecab`` and ``NormalizerNFKC150`` as below.
@@ -269,6 +296,37 @@ Next, you normalize reading of the noun that extracted with ``unify_to_romaji`` 
 .. normalize   'NormalizerNFKC150("unify_to_romaji", true)'   "カレ"   WITH_TYPES
 .. normalize   'NormalizerNFKC150("unify_to_romaji", true)'   "ナマエ"   WITH_TYPES
 .. normalize   'NormalizerNFKC150("unify_to_romaji", true)'   "ヤマダ"   WITH_TYPES
+
+Use ``unify_to_katakana`` with other options
+""""""""""""""""""""""""""""""""""""""""""""
+
+:ref:`normalizer-nfkc150-unify-to-katakana` can be combined with the following options to equate special katakana with general katakana.
+
+* :ref:`normalizer-nfkc150-unify-katakana-v-sounds`
+
+  * Equivalent: "ゔぁゔぃゔゔぇゔぉ", "ばびぶべぼ", "ヴァヴィヴヴェヴォ" and "バビブベボ"
+
+* :ref:`normalizer-nfkc150-unify-katakana-gu-small-sounds`
+
+  * Equivalent: "ぐぁぐぃぐぇぐぉ", "がぎげご", "グァグィグェグォ" and "ガギゲゴ"
+
+* :ref:`normalizer-nfkc150-unify-katakana-zu-small-sounds`
+
+  * Equivalent: "ずぁずぃずぇずぉ", "ざじぜぞ", "ズァズィズェズォ" and "ザジゼゾ"
+
+* :ref:`normalizer-nfkc150-unify-katakana-wo-sound`
+
+  * Equivalent: "お", "を", "オ" and "ヲ"
+
+* :ref:`normalizer-nfkc150-unify-katakana-di-sound`
+
+  * Equivalent: "じ", "ぢ", "ジ" and "ヂ"
+
+* :ref:`normalizer-nfkc150-unify-katakana-du-sound`
+
+  * Equivalent: "ず", "づ", "ズ" and "ヅ"
+
+For example, using ``unify_to_katakana`` and ``unify_katakana_v_sounds`` together, you can search "バイオリン", "ヴァイオリン", "ばいおりん" and "ゔぁいおりん" with "ばいおりん".
 
 Parameters
 ----------
@@ -391,6 +449,13 @@ This option enables normalize "ヴァヴィヴヴェヴォ" to "バビブベボ"
 """""""""""""""""""""""""""
 
 This option enables normalize "ヴァヴィヴゥヴェヴォ" to "ブ".
+
+.. _normalizer-nfkc150-unify-to-katakana:
+
+``unify_to_katakana``
+"""""""""""""""""""""
+
+This option normalizes hiragana to katakana.
 
 .. _normalizer-nfkc150-unify-to-romaji:
 
@@ -602,6 +667,17 @@ And a previous kana letter is "ン" , "-" is normalized to "ン".
    よ- -> よお, ろ- -> ろお, を- -> をお
    
    ん- -> んん
+
+.. _normalizer-nfkc150-unify-latin-alphabet-with:
+
+``unify_latin_alphabet_with``
+"""""""""""""""""""""""""""""
+
+.. versionadded:: 14.0.7
+
+This option enables that alphabets with diacritical mark and alphabets without diacritical mark regarded as the same character as below.
+
+However, this feature focus on only LATIN (SMALL|CAPITAL) LETTER X WITH XXX. It doesn't support LATIN (SMALL|CAPITAL) LETTER X + COMBINING XXX characters.
 
 See also
 ----------

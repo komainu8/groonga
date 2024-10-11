@@ -15,9 +15,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "パラメータ"
-msgstr ""
-
 msgid "``grn_table``"
 msgstr ""
 
@@ -33,71 +30,5 @@ msgstr "例"
 msgid "Reference"
 msgstr "リファレンス"
 
-msgid "tableが ``GRN_TABLE_PAT_KEY`` もしくは ``GRN_TABLE_DAT_KEY`` を指定して作ったtableなら、longest common prefix searchを行い、対応するIDを返します。"
-msgstr ""
-
-msgid "tableが ``GRN_TABLE_HASH_KEY`` を指定して作ったtableなら、完全に一致するキーを検索し、対応するIDを返します。"
-msgstr ""
-
-msgid "対象tableを指定します。"
-msgstr ""
-
-msgid "検索keyを指定します。"
-msgstr ""
-
-msgid "tableのIDに対応するレコードのkeyを取得します。"
-msgstr ""
-
-msgid "対応するレコードが存在する場合はkey長を返します。見つからない場合は0を返します。対応するキーの検索に成功し、またbuf_sizeの長さがkey長以上であった場合は、keybufに該当するkeyをコピーします。"
-msgstr ""
-
-msgid "対象レコードのIDを指定します。"
-msgstr ""
-
-msgid "keyを格納するバッファ(呼出側で準備する)を指定します。"
-msgstr ""
-
-msgid "keybufのサイズ(byte長)を指定します。"
-msgstr ""
-
-msgid "tableのidに対応するレコードのkeyを変更します。新しいkeyとそのbyte長をdest_keyとdest_key_sizeに指定します。"
-msgstr ""
-
-msgid "この操作は、``GRN_TABLE_DAT_KEY`` 型のテーブルのみ使用できます。"
-msgstr ""
-
-msgid "レコードIDを指定します。"
-msgstr ""
-
-msgid "tableのレコードを特定の条件でグループ化します。"
-msgstr ""
-
-msgid "group化キー構造体の配列へのポインタを指定します。"
-msgstr ""
-
-msgid "group化キー構造体の配列のサイズを指定します。"
-msgstr ""
-
-msgid "group化の結果を格納する構造体の配列へのポインタを指定します。"
-msgstr ""
-
-msgid "group化の結果を格納する構造体の配列のサイズを指定します。"
-msgstr ""
-
-msgid "table1とtable2をopの指定に従って集合演算した結果をresに格納します。"
-msgstr ""
-
-msgid "resにtable1あるいはtable2そのものを指定した場合を除けば、table1, table2は破壊されません。"
-msgstr ""
-
-msgid "対象table1を指定します。"
-msgstr ""
-
-msgid "対象table2を指定します。"
-msgstr ""
-
-msgid "結果を格納するtableを指定します。"
-msgstr ""
-
-msgid "実行する演算の種類を指定します。"
-msgstr ""
+msgid "We are currently switching to automatic generation using Doxygen."
+msgstr "現在、Doxygenを使った自動生成に切り替え中です。"

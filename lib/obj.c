@@ -551,17 +551,17 @@ bool
 grn_obj_is_reference_column(grn_ctx *ctx, grn_obj *obj)
 {
   if (!grn_obj_is_column(ctx, obj)) {
-    return GRN_FALSE;
+    return false;
   }
 
   const grn_id range_id = grn_obj_get_range(ctx, obj);
   if (grn_id_is_builtin(ctx, range_id)) {
-    return GRN_FALSE;
+    return false;
   }
 
   grn_obj *range = range = grn_ctx_at(ctx, range_id);
   if (!range) {
-    return GRN_FALSE;
+    return false;
   }
 
   uint8_t range_type = range->header.type;
@@ -856,6 +856,40 @@ grn_obj_is_scalar_accessor(grn_ctx *ctx, grn_obj *obj)
     return true;
   case GRN_ACCESSOR_GET_COLUMN_VALUE:
     return grn_obj_is_scalar_column(ctx, accessor->obj);
+  default:
+    return false;
+  }
+}
+
+bool
+grn_obj_is_text_family_scalar_accessor(grn_ctx *ctx, grn_obj *obj)
+{
+  grn_accessor *accessor;
+
+  if (!grn_obj_is_accessor(ctx, obj)) {
+    return false;
+  }
+
+  accessor = (grn_accessor *)obj;
+  while (accessor->next) {
+    accessor = accessor->next;
+  }
+
+  switch (accessor->action) {
+  case GRN_ACCESSOR_GET_ID:
+  case GRN_ACCESSOR_GET_SCORE:
+  case GRN_ACCESSOR_GET_NSUBRECS:
+  case GRN_ACCESSOR_GET_MAX:
+  case GRN_ACCESSOR_GET_MIN:
+  case GRN_ACCESSOR_GET_SUM:
+  case GRN_ACCESSOR_GET_AVG:
+  case GRN_ACCESSOR_GET_MEAN:
+    return false;
+  case GRN_ACCESSOR_GET_VALUE:
+    return grn_type_id_is_text_family(ctx,
+                                      grn_obj_get_range(ctx, accessor->obj));
+  case GRN_ACCESSOR_GET_COLUMN_VALUE:
+    return grn_obj_is_text_family_scalar_column(ctx, accessor->obj);
   default:
     return false;
   }

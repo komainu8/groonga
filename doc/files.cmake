@@ -720,8 +720,10 @@ set(GRN_DOC_SOURCES
     example/reference/normalizers/normalizer-nfkc150-unify-katakana-v-sounds.log
     example/reference/normalizers/normalizer-nfkc150-unify-katakana-wo-sound.log
     example/reference/normalizers/normalizer-nfkc150-unify-katakana-zu-small-sounds.log
+    example/reference/normalizers/normalizer-nfkc150-unify-latin-alphabet-with.log
     example/reference/normalizers/normalizer-nfkc150-unify-middle-dot.log
     example/reference/normalizers/normalizer-nfkc150-unify-prolonged-sound-mark.log
+    example/reference/normalizers/normalizer-nfkc150-unify-to-katakana.log
     example/reference/normalizers/normalizer-nfkc150-unify-to-romaji-complex.log
     example/reference/normalizers/normalizer-nfkc150-unify-to-romaji.log
     example/reference/normalizers/normalizer-nfkc150-unify-voiced-sound-mark-hiragana.log

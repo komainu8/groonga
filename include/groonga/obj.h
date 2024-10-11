@@ -40,8 +40,8 @@ grn_obj_is_temporary(grn_ctx *ctx, grn_obj *obj);
 /**
  * \brief Check whether a Groonga built-in object is or not.
  *
- * \param ctx The context object
- * \param obj The target object to check
+ * \param ctx The context object.
+ * \param obj The target object to check.
  *
  * \return `true` if the object is a built-in Groonga object, `false` otherwise.
  */
@@ -98,8 +98,8 @@ grn_obj_is_number_family_scalar_column(grn_ctx *ctx, grn_obj *obj);
 /**
  * \brief Check whether the specified object is a vector column or not.
  *
- * \param ctx The context object
- * \param obj The target object to check
+ * \param ctx The context object.
+ * \param obj The target object to check.
  *
  * \return `true` if the object is a vector column, `false` otherwise.
  */
@@ -143,6 +143,19 @@ GRN_API bool
 grn_obj_is_column_value_accessor(grn_ctx *ctx, grn_obj *obj);
 GRN_API bool
 grn_obj_is_scalar_accessor(grn_ctx *ctx, grn_obj *obj);
+/**
+ * \brief Check whether a text family scalar accessor or not.
+ *
+ * \param ctx The context object.
+ * \param obj The target object to check.
+ *
+ * \return `true` if the object is an accessor of \ref
+ *         GRN_DB_SHORT_TEXT range table or \ref GRN_DB_SHORT_TEXT /
+ *         \ref GRN_DB_TEXT / \ref GRN_DB_LONG_TEXT scalar column,
+ *         `false` otherwise.
+ */
+GRN_API bool
+grn_obj_is_text_family_scalar_accessor(grn_ctx *ctx, grn_obj *obj);
 GRN_API bool
 grn_obj_is_number_family_scalar_accessor(grn_ctx *ctx, grn_obj *obj);
 GRN_API bool

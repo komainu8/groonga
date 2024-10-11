@@ -25,6 +25,7 @@
 #include "grn_encoding.h"
 #include "grn_hash.h"
 #include "grn_ii.h"
+#include "grn_language_model.hpp"
 #include "grn_pat.h"
 #include "grn_index_column.h"
 #include "grn_proc.h"
@@ -161,6 +162,7 @@ grn_init_from_env(void)
   grn_io_init_from_env();
   grn_ii_init_from_env();
   grn_ja_init_from_env();
+  grn::language_model::init_from_env();
   grn_db_init_from_env();
   grn_expr_init_from_env();
   grn_index_column_init_from_env();
@@ -185,6 +187,7 @@ grn_init_external_libraries(void)
   blosc2_init();
 #endif
   grn_distance_init_external_libraries();
+  grn::language_model::init_external_libraries();
 }
 
 static void
@@ -196,6 +199,7 @@ grn_fin_external_libraries(void)
 #ifdef GRN_WITH_BLOSC
   blosc2_destroy();
 #endif
+  grn::language_model::fin_external_libraries();
 }
 
 void
@@ -1803,9 +1807,9 @@ grn_ctx_qe_exec_uri(grn_ctx *ctx, const char *path, uint32_t path_len)
           p = grn_text_cgidec(ctx, &buf, p, e, HTTP_QUERY_PAIRS_DELIMITERS);
           if (GRN_TEXT_LEN(&buf) == strlen("yes") &&
               !memcmp(GRN_TEXT_VALUE(&buf), "yes", GRN_TEXT_LEN(&buf))) {
-            ctx->impl->output.is_pretty = GRN_TRUE;
+            ctx->impl->output.is_pretty = true;
           } else {
-            ctx->impl->output.is_pretty = GRN_FALSE;
+            ctx->impl->output.is_pretty = false;
           }
         } else if (l == OUTPUT_TRACE_LOG_LEN &&
                    !memcmp(v, OUTPUT_TRACE_LOG, OUTPUT_TRACE_LOG_LEN)) {
@@ -1929,9 +1933,9 @@ grn_ctx_qe_exec(grn_ctx *ctx, const char *str, uint32_t str_len)
           p = grn_text_unesc_tok(ctx, &buf, p, e, &tok_type);
           if (GRN_TEXT_LEN(&buf) == strlen("yes") &&
               !memcmp(GRN_TEXT_VALUE(&buf), "yes", GRN_TEXT_LEN(&buf))) {
-            ctx->impl->output.is_pretty = GRN_TRUE;
+            ctx->impl->output.is_pretty = true;
           } else {
-            ctx->impl->output.is_pretty = GRN_FALSE;
+            ctx->impl->output.is_pretty = false;
           }
         } else if (l == OUTPUT_TRACE_LOG_LEN &&
                    !memcmp(v, OUTPUT_TRACE_LOG, OUTPUT_TRACE_LOG_LEN)) {
@@ -2111,7 +2115,7 @@ grn_ctx_send(grn_ctx *ctx, const char *str, unsigned int str_len, int flags)
         GRN_BULK_REWIND(&(ctx->impl->output.levels));
         ctx->impl->output.type = GRN_CONTENT_JSON;
         ctx->impl->output.mime_type = "application/json";
-        ctx->impl->output.is_pretty = GRN_FALSE;
+        ctx->impl->output.is_pretty = false;
         grn_timeval_now(ctx, &ctx->impl->tv);
         GRN_QUERY_LOG(ctx, GRN_QUERY_LOG_COMMAND, ">", "%.*s", str_len, str);
         if (str_len && *str == '/') {
@@ -2212,7 +2216,8 @@ grn_ctx_recv(grn_ctx *ctx, char **str, unsigned int *str_len, int *flags)
           }
         }
         ctx->impl->output.type = static_cast<grn_content_type>(header.qtype);
-        ctx->rc = static_cast<grn_rc>(ntohs(header.status));
+        ctx->rc =
+          static_cast<grn_rc>(static_cast<int16_t>(ntohs(header.status)));
         ctx->errbuf[0] = '\0';
         ctx->errline = 0;
         ctx->errfile = NULL;
