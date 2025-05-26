@@ -5824,10 +5824,20 @@ set_cursor_rk(grn_ctx *ctx,
   return ctx->rc;
 }
 
+static grn_bool
+grn_pat_is_large_total_key_size(grn_ctx *ctx, grn_pat *pat)
+{
+  return (pat->header.flags & GRN_OBJ_KEY_LARGE) == GRN_OBJ_KEY_LARGE;
+}
+
 uint32_t
 grn_pat_total_key_size(grn_ctx *ctx, grn_pat *pat)
 {
-  return pat->header->curr_key;
+  if (grn_pat_is_large_total_key_size) {
+    ;
+  } else {
+    return pat->header->curr_key;
+  }
 }
 
 bool
