@@ -162,7 +162,7 @@ typedef struct {
   pat_node_direction record_direction;
   const uint8_t *key;
   uint32_t key_size;
-  uint32_t key_offset;
+  uint64_t key_offset;
   uint32_t shared_key_offset;
   bool is_shared;
   uint16_t check;
@@ -253,7 +253,7 @@ grn_pat_wal_add_entry_add_entry(grn_ctx *ctx,
                            key_size,
 
                            GRN_WAL_KEY_KEY_OFFSET,
-                           GRN_WAL_VALUE_UINT32,
+                           GRN_WAL_VALUE_UINT64,
                            data->key_offset,
 
                            GRN_WAL_KEY_CHECK,
@@ -737,7 +737,7 @@ grn_pat_wal_add_entry_defrag_key(grn_ctx *ctx,
                            key_size,
 
                            GRN_WAL_KEY_KEY_OFFSET,
-                           GRN_WAL_VALUE_UINT32,
+                           GRN_WAL_VALUE_UINT64,
                            data->key_offset,
 
                            GRN_WAL_KEY_END);
@@ -766,7 +766,7 @@ grn_pat_wal_add_entry_defrag_current_key(grn_ctx *ctx,
                            data->record_id,
 
                            GRN_WAL_KEY_KEY_OFFSET,
-                           GRN_WAL_VALUE_UINT32,
+                           GRN_WAL_VALUE_UINT64,
                            data->key_offset,
 
                            GRN_WAL_KEY_END);
@@ -797,7 +797,7 @@ grn_pat_wal_add_entry_format_details(grn_ctx *ctx,
     grn_text_printf(ctx, details, "key-size:%u ", data->key_size);
   }
   if (used->key_offset) {
-    grn_text_printf(ctx, details, "key-offset:%u ", data->key_offset);
+    grn_text_printf(ctx, details, "key-offset:%lu ", data->key_offset);
   }
   if (used->shared_key_offset) {
     grn_text_printf(ctx,
@@ -2261,7 +2261,11 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
     return data->found_id;
   }
 
-  data->wal_data.key_offset = pat->header->curr_key;
+  if (pat_is_key_large(pat)) {
+    data->wal_data.key_offset = pat->header->curr_key_large;
+  } else {
+    data->wal_data.key_offset = pat->header->curr_key;
+  }
   pat_node *node = NULL;
   {
     uint32_t key_storage_size = pat_key_storage_size(key_size);
@@ -5972,14 +5976,14 @@ static inline void
 pat_key_move(grn_ctx *ctx,
              grn_pat *pat,
              pat_node *node,
-             uint32_t new_position,
+             uint64_t new_position,
              uint8_t *key,
              uint32_t key_size)
 {
   uint8_t *new_key_address;
   KEY_AT(pat, new_position, new_key_address, 0);
   grn_memmove(new_key_address, key, key_size);
-  node->key = new_position;
+  node->key = (uint32_t)new_position;
 }
 
 typedef void (*pat_key_defrag_each_callback)(
