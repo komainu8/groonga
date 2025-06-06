@@ -1588,6 +1588,7 @@ _grn_pat_create(grn_ctx *ctx,
   header->n_entries = 0;
   header->curr_rec = 0;
   header->curr_key = 0;
+  header->curr_key_large = 0;
   header->curr_del = 0;
   header->curr_del2 = 0;
   header->curr_del3 = 0;
