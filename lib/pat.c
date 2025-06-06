@@ -1127,6 +1127,16 @@ is_total_key_size_over(grn_ctx *ctx, grn_pat *pat, uint64_t curr_total_key_size,
   return is_total_key_size_over;
 }
 
+static inline void
+pat_update_curr_key(grn_ctx *ctx, grn_pat *pat, uint64_t new_curr_key)
+{
+  if (pat_is_key_large(pat)) {
+    pat->header->curr_key_large = new_curr_key;
+  } else {
+    pat->header->curr_key = (uint32_t)new_curr_key;
+  }
+}
+
 static inline uint32_t
 key_put(grn_ctx *ctx, grn_pat *pat, const uint8_t *key, uint32_t len)
 {
@@ -5969,12 +5979,6 @@ pat_key_move(grn_ctx *ctx,
   KEY_AT(pat, new_position, new_key_address, 0);
   grn_memmove(new_key_address, key, key_size);
   node->key = new_position;
-}
-
-static inline void
-pat_update_curr_key(grn_ctx *ctx, grn_pat *pat, uint32_t new_curr_key)
-{
-  pat->header->curr_key = new_curr_key;
 }
 
 typedef void (*pat_key_defrag_each_callback)(
