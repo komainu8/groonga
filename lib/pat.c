@@ -6001,14 +6001,14 @@ pat_key_defrag_wal_add_entry_callback(grn_ctx *ctx,
   grn_pat_wal_add_entry(ctx, wal_data);
 }
 
-static inline uint32_t
+static inline uint64_t
 pat_key_defrag_each(grn_ctx *ctx,
                     grn_pat *pat,
                     grn_id *target_ids,
                     size_t n_targets,
                     pat_key_defrag_each_callback callback)
 {
-  uint32_t new_curr_key = 0;
+  uint64_t new_curr_key = 0;
   for (size_t i = 0; i < n_targets; i++) {
     grn_id record_id = target_ids[i];
     pat_node *node = pat_get(ctx, pat, record_id);
@@ -6081,6 +6081,16 @@ grn_pat_defrag_clear_delinfos(grn_ctx *ctx, grn_pat *pat, grn_id active_max_id)
   pat->header->n_garbages = 0;
 }
 
+static inline uint64_t
+calc_reduced_bytes(grn_pat *pat, uint64_t new_curr_key)
+{
+  if (pat_is_key_large(pat)) {
+    return (pat->header->curr_key_large - new_curr_key);
+  } else {
+    return (pat->header->curr_key - new_curr_key);
+  }
+}
+
 /* See test/command/suite/defrag/pat/README.md when you change this.
  * You must update tests for this too.
  * If you're using a grn_pat in multi-thread/multi-process environment, you must
@@ -6093,7 +6103,7 @@ grn_pat_defrag(grn_ctx *ctx, grn_pat *pat)
   wal_data.pat = pat;
   wal_data.tag = "[pat][defrag][current-key]";
 
-  int reduced_bytes = 0;
+  uint64_t reduced_bytes = 0;
   /* We will clear grn_pat_header::delinfos and grn_pat_header::garbages after
    * defragmentation. Execute delinfo_turn_2() on the data remaining in
    * grn_pat_header::delinfos before clearing.
@@ -6106,7 +6116,7 @@ grn_pat_defrag(grn_ctx *ctx, grn_pat *pat)
 
   uint32_t n_records = grn_pat_size(ctx, pat);
   if (n_records == 0) {
-    uint32_t new_curr_key = 0;
+    uint64_t new_curr_key = 0;
     grn_id active_max_id = 0;
     wal_data.key_offset = new_curr_key;
     wal_data.record_id = active_max_id;
@@ -6151,7 +6161,7 @@ grn_pat_defrag(grn_ctx *ctx, grn_pat *pat)
   pat_node_compare_by_key_data data = {ctx, pat};
   grn_qsort_r_grn_id(target_ids, n_targets, grn_pat_node_compare_by_key, &data);
 
-  uint32_t new_curr_key =
+  uint64_t new_curr_key =
     pat_key_defrag_each(ctx,
                         pat,
                         target_ids,
@@ -6162,7 +6172,7 @@ grn_pat_defrag(grn_ctx *ctx, grn_pat *pat)
   grn_pat_wal_add_entry(ctx, &wal_data);
 
   pat_key_defrag_each(ctx, pat, target_ids, n_targets, pat_key_defrag_callback);
-  reduced_bytes = pat->header->curr_key - new_curr_key;
+  reduced_bytes = calc_reduced_bytes(pat, new_curr_key);
   pat_update_curr_key(ctx, pat, new_curr_key);
   grn_pat_defrag_clear_delinfos(ctx, pat, active_max_id);
 
