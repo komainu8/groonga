@@ -93,6 +93,13 @@ typedef struct {
 #define PAT_IMMEDIATE (1 << 2)
 
 static inline bool
+pat_is_key_large(grn_pat *pat)
+{
+  return (pat->header->flags & GRN_OBJ_KEY_LARGE) == GRN_OBJ_KEY_LARGE;
+}
+
+
+static inline bool
 pat_key_is_embeddable(uint32_t key_size)
 {
   return key_size <= sizeof(uint32_t);
@@ -5849,10 +5856,14 @@ set_cursor_rk(grn_ctx *ctx,
   return ctx->rc;
 }
 
-uint32_t
+uint64_t
 grn_pat_total_key_size(grn_ctx *ctx, grn_pat *pat)
 {
-  return pat->header->curr_key;
+  if (pat_is_key_large(pat)) {
+    return pat->header->curr_key_large;
+  } else {
+    return pat->header->curr_key;
+  }
 }
 
 bool
