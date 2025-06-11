@@ -1556,7 +1556,7 @@ if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
         ${GRN_FETCH_CONTENT_COMMON_OPTIONS}
         URL ${FAISS_SOURCE_URL}
         URL_HASH "SHA256=${GRN_FAISS_BUNDLED_SHA256}")
-      get_prepare_fetchcontent()
+      grn_prepare_fetchcontent()
       set(FAISS_ALL_WARNINGS OFF)
       fetchcontent_makeavailable(faiss)
       install(
