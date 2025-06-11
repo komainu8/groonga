@@ -132,6 +132,7 @@
 /tmp-doc/
 /vendor/CRoaring-*
 /vendor/c-blosc2-*
+/vendor/faiss/*
 /vendor/h3-*
 /vendor/llama.cpp-*
 /vendor/lz4-*

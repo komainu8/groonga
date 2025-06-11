@@ -1,5 +1,6 @@
 # Copyright (C) 2012-2018  Brazil
 # Copyright (C) 2018-2025  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2025  Horimoto Yasuhiro <horimoto@clear-code.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -1516,6 +1517,63 @@ if(NOT (GRN_WITH_XSIMD OR GRN_WITH_SIMSIMD))
   set(GRN_WITH_SIMD_AVX2 OFF)
   set(GRN_WITH_SIMD_AVX512 OFF)
   set(GRN_WITH_SIMD_NEON64 OFF)
+endif()
+
+set(GRN_FAISS_BUNDLED_VERSION "1.11.0")
+set(GRN_FAISS_BUNDLED_SHA256
+    "c5d517da6deb6a6d74290d7145331fc7474426025e2d826fa4a6d40670f4493c")
+set(GRN_WITH_FAISS
+    "auto"
+    CACHE STRING "Use faiss for ann index.")
+set(GRN_WITH_FAISS_BUNDLED FALSE)
+if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
+  if("${GRN_WITH_FAISS}" STREQUAL "bundled")
+    set(faiss_FOUND FALSE)
+  else ()
+    if("${GRN_WITH_FAISS}" STREQUAL "system")
+      find_package(faiss REQUIRED)
+    else()
+      find_package(faiss)
+    endif()
+  endif()
+  if(faiss_FOUND)
+  elseif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+    function(grn_build_faiss)
+      set(FAISS_SOURCE_BASE_NAME
+          "faiss-${GRN_FAISS_BUNDLED_VERSION}.tar.gz")
+      set(FAISS_SOURCE_LOCAL_PATH
+          "${CMAKE_CURRENT_SOURCE_DIR}/vendor/${FAISS_SOURCE_BASE_NAME}")
+      if(EXISTS ${FAISS_SOURCE_LOCAL_PATH})
+        set(FAISS_SOURCE_URL ${FAISS_SOURCE_LOCAL_PATH})
+      else()
+        set(FAISS_SOURCE_URL
+            "https://github.com/facebookresearch/faiss/archive/refs/tags")
+         string(APPEND FAISS_SOURCE_URL
+                "/${GRN_FAISS_BUNDLED_VERSION}.tar.gz")
+      endif()
+      fetchcontent_declare(
+        faiss
+        ${GRN_FETCH_CONTENT_COMMON_OPTIONS}
+        URL ${FAISS_SOURCE_URL}
+        URL_HASH "SHA256=${GRN_FAISS_BUNDLED_SHA256}")
+      get_prepare_fetchcontent()
+      set(FAISS_ALL_WARNINGS OFF)
+      fetchcontent_makeavailable(faiss)
+      install(
+        FILES "${faiss_SOURCE_DIR}/CHANGELOG.md"
+              "${faiss_SOURCE_DIR}/LICENSE"
+              "${faiss_SOURCE_DIR}/README.md"
+        DESTINATION "${GRN_DATA_DIR/faiss}")
+    endfunction()
+    grn_build_faiss()
+    target_link_libraries(grn_dependencies INTERFACE faiss)
+    set(GRN_WITH_FAISS_BUNDLED TRUE)
+    message(STATUS "faiss: bundled")
+  else()
+    set(GRN_WITH_FAISS FALSE)
+  endif()
+else()
+  set(GRN_WITH_FAISS FALSE)
 endif()
 
 set(GRN_H3_BUNDLED_VERSION "4.1.0")
