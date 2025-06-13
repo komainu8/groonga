@@ -1565,7 +1565,7 @@ if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
         FILES "${faiss_SOURCE_DIR}/CHANGELOG.md"
               "${faiss_SOURCE_DIR}/LICENSE"
               "${faiss_SOURCE_DIR}/README.md"
-        DESTINATION "${GRN_DATA_DIR/faiss}")
+        DESTINATION "${GRN_DATA_DIR}/faiss")
     endfunction()
     grn_build_faiss()
     target_link_libraries(grn_dependencies INTERFACE faiss)
