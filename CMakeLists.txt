@@ -1557,7 +1557,9 @@ if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
         URL ${FAISS_SOURCE_URL}
         URL_HASH "SHA256=${GRN_FAISS_BUNDLED_SHA256}")
       grn_prepare_fetchcontent()
-      set(FAISS_ALL_WARNINGS OFF)
+      set(FAISS_ENABLE_GPU OFF)
+      set(FAISS_ENABLE_PYTHON OFF)
+      set(FAISS_ENABLE_CUVS OFF)
       fetchcontent_makeavailable(faiss)
       install(
         FILES "${faiss_SOURCE_DIR}/CHANGELOG.md"
