@@ -19,6 +19,7 @@ RUN \
     libstemmer-devel \
     libzstd-devel \
     lz4-devel \
+    openblas-devel \
     openssl-devel \
     pkgconfig \
     ruby \

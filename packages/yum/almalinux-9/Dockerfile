@@ -30,6 +30,7 @@ RUN \
     libzstd-devel \
     lz4-devel \
     msgpack-devel \
+    openblas-devel \
     openssl-devel \
     pkgconfig \
     ruby \

@@ -27,6 +27,7 @@ RUN \
     lz4-devel \
     mecab-devel \
     msgpack-devel \
+    openblas-devel \
     openssl-devel \
     pkgconfig \
     python2-devel \

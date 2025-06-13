@@ -27,6 +27,7 @@ RUN \
     devscripts \
     dh-apparmor \
     libarrow-dev \
+    libopenblas-dev \
     libedit-dev \
     libevent-dev \
     liblz4-dev \
