@@ -1549,7 +1549,7 @@ if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
         set(FAISS_SOURCE_URL
             "https://github.com/facebookresearch/faiss/archive/refs/tags")
          string(APPEND FAISS_SOURCE_URL
-                "/${GRN_FAISS_BUNDLED_VERSION}.tar.gz")
+                "/v${GRN_FAISS_BUNDLED_VERSION}.tar.gz")
       endif()
       fetchcontent_declare(
         faiss
