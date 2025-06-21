@@ -31,6 +31,7 @@
 #include "grn_dat.h"
 #include "grn_ii.h"
 #include "grn_index_column.h"
+#include "grn_ivf.h"
 #include "grn_ctx_impl.h"
 #include "grn_table.h"
 #include "grn_table_selector.h"
@@ -5768,6 +5769,9 @@ grn_column_create(grn_ctx *ctx,
   case GRN_OBJ_COLUMN_INDEX:
     res = (grn_obj *)
       grn_ii_create(ctx, path, table, flags); // todo : ii layout support
+    break;
+  case GRN_OBJ_COLUMN_IVF_INDEX:
+    res = (grn_obj *)grn_ivf_create(ctx, path, table, flags);
     break;
   }
   if (res) {
