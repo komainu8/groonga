@@ -736,8 +736,9 @@ typedef uint32_t grn_column_flags;
  * Index column type.
  * Indicates that the column is an inverted index.
  */
-#define GRN_OBJ_COLUMN_INDEX  (0x02)
+#define GRN_OBJ_COLUMN_INDEX (0x02)
 
+#define GRN_OBJ_COLUMN_IVF_INDEX  (0x03)
 #define GRN_OBJ_COMPRESS_MASK (0x07 << 4)
 #define GRN_OBJ_COMPRESS_NONE (0x00 << 4)
 /**
@@ -891,6 +892,7 @@ typedef uint32_t grn_column_flags;
 #define GRN_COLUMN_FIX_SIZE         (0x40)
 #define GRN_COLUMN_VAR_SIZE         (0x41)
 #define GRN_COLUMN_INDEX            (0x48)
+#define GRN_COLUMN_IVF_INDEX        (0x49)
 
 typedef struct _grn_section {
   uint32_t offset;
