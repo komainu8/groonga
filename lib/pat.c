@@ -2513,6 +2513,25 @@ grn_pat_reuse_shared_node(grn_ctx *ctx,
 }
 
 static inline void
+_grn_pat_reuse_shared_node(grn_ctx *ctx,
+                           grn_pat *pat,
+                           pat_node_common *node,
+                           grn_id id,
+                           const uint8_t *key,
+                           uint32_t key_size,
+                           uint32_t shared_key_offset,
+                           uint16_t check,
+                           uint16_t check_max,
+                           grn_id *id_location)
+{
+  pat->header->garbages[0] = pat_node_get_left(pat, node);
+  pat->header->n_garbages--;
+  pat->header->n_entries++;
+  _pat_node_set_shared_key(ctx, pat, node, key_size, shared_key_offset);
+  _grn_pat_enable_node(ctx, pat, node, id, key, check, check_max, id_location);
+}
+
+static inline void
 grn_pat_add_shared_node(grn_ctx *ctx,
                         grn_pat *pat,
                         pat_node *node,
@@ -6841,7 +6860,7 @@ grn_pat_wal_recover_reuse_shared_entry(grn_ctx *ctx,
                                        grn_wal_reader_entry *entry,
                                        const char *wal_error_tag)
 {
-  pat_node *node = pat_get(ctx, pat, entry->record_id);
+  pat_node_common *node = _pat_node_get(ctx, pat, entry->record_id);
   if (!node) {
     grn_wal_set_recover_error(ctx,
                               GRN_NO_MEMORY_AVAILABLE,
@@ -6851,8 +6870,9 @@ grn_pat_wal_recover_reuse_shared_entry(grn_ctx *ctx,
                               "failed to refer node");
     return;
   }
-  node->lr[0] = entry->next_garbage_record_id;
-  pat_node *parent_node = pat_get(ctx, pat, entry->parent_record_id);
+  pat_node_set_left(pat, node, entry->next_garbage_record_id);
+  pat_node_common *parent_node =
+    _pat_node_get(ctx, pat, entry->parent_record_id);
   if (!parent_node) {
     grn_wal_set_recover_error(ctx,
                               GRN_NO_MEMORY_AVAILABLE,
@@ -6862,22 +6882,23 @@ grn_pat_wal_recover_reuse_shared_entry(grn_ctx *ctx,
                               "failed to refer parent node");
     return;
   }
-  grn_id *id_location = &(parent_node->lr[entry->record_direction]);
+  grn_id *id_location =
+    pat_node_get_child_address(pat, parent_node, entry->record_direction);
   *id_location = entry->previous_record_id;
   uint16_t check_max =
     (uint16_t)PAT_CHECK_PACK(entry->key.content.binary.size, 0, false);
   pat->header->n_garbages = entry->n_garbages;
   pat->header->n_entries = entry->n_entries;
-  grn_pat_reuse_shared_node(ctx,
-                            pat,
-                            node,
-                            entry->record_id,
-                            entry->key.content.binary.data,
-                            entry->key.content.binary.size,
-                            (uint32_t)(entry->shared_key_offset),
-                            entry->check,
-                            check_max,
-                            id_location);
+  _grn_pat_reuse_shared_node(ctx,
+                             pat,
+                             node,
+                             entry->record_id,
+                             entry->key.content.binary.data,
+                             entry->key.content.binary.size,
+                             (uint32_t)(entry->shared_key_offset),
+                             entry->check,
+                             check_max,
+                             id_location);
 }
 
 static void
