@@ -1385,7 +1385,7 @@ pat_node_set_key_position(grn_pat *pat,
  * offset of key but the value of key directly.
  */
 static inline uint64_t
-pat_node_get_key_position(grn_pat *pat, pat_node_common *node)
+pat_node_get_key_offset(grn_pat *pat, pat_node_common *node)
 {
   if (pat_is_key_large(pat)) {
     return node->node_large.key;
@@ -1851,7 +1851,7 @@ _grn_pat_create(grn_ctx *ctx,
                 uint32_t flags)
 {
   grn_io *io;
-  pat_node *node0;
+  pat_node_common *node0;
   struct grn_pat_header *header;
   uint32_t entry_size, w_of_element;
   grn_encoding encoding = ctx->encoding;
@@ -1926,13 +1926,13 @@ _grn_pat_create(grn_ctx *ctx,
   grn_table_module_init(ctx, &(pat->tokenizer), GRN_ID_NIL);
   pat->encoding = encoding;
   pat->obj.header.flags = header->flags;
-  if (!(node0 = pat_get(ctx, pat, 0))) {
+  if (!(node0 = _pat_node_get(ctx, pat, 0))) {
     grn_io_close(ctx, io);
     return NULL;
   }
-  node0->lr[1] = 0;
-  node0->lr[0] = 0;
-  node0->key = 0;
+  pat_node_set_right(pat, node0, 0);
+  pat_node_set_left(pat, node0, 0);
+  pat_node_set_key_offset(pat, node0, 0);
   return pat;
 }
 
@@ -2555,11 +2555,12 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
   if (pat->cache) {
     data->cache_id = grn_pat_cache_compute_id(ctx, pat, key, key_size);
     if (pat->cache[data->cache_id] != GRN_ID_NIL) {
-      pat_node *node;
+      pat_node_common *node;
       PAT_AT(pat, pat->cache[data->cache_id], node);
       if (node) {
-        const uint8_t *k = pat_node_get_key(ctx, pat, node);
-        if (k && key_size == PAT_LEN(node) && memcmp(k, key, key_size) == 0) {
+        const uint8_t *k = _pat_node_get_key(ctx, pat, node);
+        if (k && key_size == pat_node_get_key_length(pat, node) &&
+            memcmp(k, key, key_size) == 0) {
           return pat->cache[data->cache_id];
         }
       }
@@ -2602,16 +2603,16 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
         if (grn_pat_wal_add_entry(ctx, &(data->wal_data)) != GRN_SUCCESS) {
           return GRN_ID_NIL;
         }
-        grn_pat_reuse_shared_node(ctx,
-                                  pat,
-                                  node,
-                                  data->wal_data.record_id,
-                                  data->wal_data.key,
-                                  data->wal_data.key_size,
-                                  data->wal_data.shared_key_offset,
-                                  data->wal_data.check,
-                                  data->check_max,
-                                  data->last_id_location);
+        _grn_pat_reuse_shared_node(ctx,
+                                   pat,
+                                   node,
+                                   data->wal_data.record_id,
+                                   data->wal_data.key,
+                                   data->wal_data.key_size,
+                                   data->wal_data.shared_key_offset,
+                                   data->wal_data.check,
+                                   data->check_max,
+                                   data->last_id_location);
         pat->header->wal_id = data->wal_data.wal_id;
       } else {
         data->wal_data.event = GRN_WAL_EVENT_ADD_SHARED_ENTRY;
@@ -2632,16 +2633,16 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
                             data->shared_key_offset);
           return GRN_ID_NIL;
         }
-        grn_pat_add_shared_node(ctx,
-                                pat,
-                                node,
-                                data->wal_data.record_id,
-                                data->wal_data.key,
-                                data->wal_data.key_size,
-                                data->wal_data.shared_key_offset,
-                                data->wal_data.check,
-                                data->check_max,
-                                data->last_id_location);
+        _grn_pat_add_shared_node(ctx,
+                                 pat,
+                                 node,
+                                 data->wal_data.record_id,
+                                 data->wal_data.key,
+                                 data->wal_data.key_size,
+                                 data->wal_data.shared_key_offset,
+                                 data->wal_data.check,
+                                 data->check_max,
+                                 data->last_id_location);
         pat->header->wal_id = data->wal_data.wal_id;
       }
     } else {
@@ -2664,16 +2665,16 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
         if (grn_pat_wal_add_entry(ctx, &(data->wal_data)) != GRN_SUCCESS) {
           return GRN_ID_NIL;
         }
-        if (grn_pat_reuse_node(ctx,
-                               pat,
-                               node,
-                               data->wal_data.record_id,
-                               data->wal_data.key,
-                               data->wal_data.key_size,
-                               data->wal_data.check,
-                               data->check_max,
-                               data->last_id_location,
-                               data->wal_data.tag) != GRN_SUCCESS) {
+        if (_grn_pat_reuse_node(ctx,
+                                pat,
+                                node,
+                                data->wal_data.record_id,
+                                data->wal_data.key,
+                                data->wal_data.key_size,
+                                data->wal_data.check,
+                                data->check_max,
+                                data->last_id_location,
+                                data->wal_data.tag) != GRN_SUCCESS) {
           return GRN_ID_NIL;
         }
         pat->header->wal_id = data->wal_data.wal_id;
@@ -2694,16 +2695,16 @@ grn_pat_add_internal(grn_ctx *ctx, grn_pat_add_data *data)
                             "failed to get node");
           return GRN_ID_NIL;
         }
-        if (grn_pat_add_node(ctx,
-                             pat,
-                             node,
-                             data->wal_data.record_id,
-                             data->wal_data.key,
-                             data->wal_data.key_size,
-                             data->wal_data.check,
-                             data->check_max,
-                             data->last_id_location,
-                             data->wal_data.tag) != GRN_SUCCESS) {
+        if (_grn_pat_add_node(ctx,
+                              pat,
+                              node,
+                              data->wal_data.record_id,
+                              data->wal_data.key,
+                              data->wal_data.key_size,
+                              data->wal_data.check,
+                              data->check_max,
+                              data->last_id_location,
+                              data->wal_data.tag) != GRN_SUCCESS) {
           return GRN_ID_NIL;
         }
         pat->header->wal_id = data->wal_data.wal_id;
@@ -2923,22 +2924,23 @@ _grn_pat_get(
   grn_ctx *ctx, grn_pat *pat, const void *key, uint32_t key_size, void **value)
 {
   grn_id r;
-  pat_node *rn;
+  pat_node_common *rn;
   int32_t c0 = -1, c;
   int32_t len = key_size * 16;
   PAT_AT(pat, 0, rn);
-  for (r = rn->lr[1]; r;) {
+  for (r = pat_node_get_right(pat, rn); r;) {
     PAT_AT(pat, r, rn);
     if (!rn) {
       break; /* corrupt? */
     }
-    c = PAT_CHK(rn);
+    c = pat_node_get_check(pat, rn);
     if (len <= c) {
       break;
     }
     if (c <= c0) {
-      const uint8_t *k = pat_node_get_key(ctx, pat, rn);
-      if (k && key_size == PAT_LEN(rn) && !memcmp(k, key, key_size)) {
+      const uint8_t *k = _pat_node_get_key(ctx, pat, rn);
+      if (k && key_size == pat_node_get_key_length(pat, rn) &&
+          !memcmp(k, key, key_size)) {
         if (value) {
           byte *v = (byte *)sis_get(ctx, pat, r);
           if (pat->obj.header.flags & GRN_OBJ_KEY_WITH_SIS) {
@@ -2951,7 +2953,7 @@ _grn_pat_get(
       }
       break;
     }
-    r = *grn_pat_next_location(ctx, rn, key, c, len);
+    r = *_grn_pat_next_location(ctx, pat, rn, key, c, len);
     c0 = c;
   }
   return GRN_ID_NIL;
@@ -4099,7 +4101,7 @@ grn_pat_size(grn_ctx *ctx, grn_pat *pat)
 const char *
 _grn_pat_key(grn_ctx *ctx, grn_pat *pat, grn_id id, uint32_t *key_size)
 {
-  pat_node *node;
+  pat_node_common *node;
   uint8_t *key;
   if (grn_pat_error_if_truncated(ctx, pat) != GRN_SUCCESS) {
     *key_size = 0;
@@ -4114,9 +4116,9 @@ _grn_pat_key(grn_ctx *ctx, grn_pat *pat, grn_id id, uint32_t *key_size)
     *key_size = 0;
     return NULL;
   }
-  key = pat_node_get_key(ctx, pat, node);
+  key = _pat_node_get_key(ctx, pat, node);
   if (key) {
-    *key_size = PAT_LEN(node);
+    *key_size = pat_node_get_key_length(pat, node);
   } else {
     *key_size = 0;
   }
@@ -4150,7 +4152,7 @@ grn_pat_get_key(
 {
   int len;
   uint8_t *key;
-  pat_node *node;
+  pat_node_common *node;
   if (!pat) {
     return 0;
   }
@@ -4164,10 +4166,10 @@ grn_pat_get_key(
   if (!node) {
     return 0;
   }
-  if (!(key = pat_node_get_key(ctx, pat, node))) {
+  if (!(key = _pat_node_get_key(ctx, pat, node))) {
     return 0;
   }
-  len = PAT_LEN(node);
+  len = pat_node_get_key_length(pat, node);
   if (keybuf && bufsize >= len) {
     if (KEY_NEEDS_CONVERT(pat, len)) {
       KEY_DEC(pat, keybuf, key, len);
@@ -5543,7 +5545,7 @@ grn_p_pat_node(grn_ctx *ctx, grn_pat *pat, pat_node_common *node)
   if (pat_node_is_key_immediate(pat, node)) {
     key = _pat_node_get_key(ctx, pat, node);
   } else {
-    KEY_AT(pat, pat_node_get_key_position(pat, node), key, 0);
+    KEY_AT(pat, pat_node_get_key_offset(pat, node), key, 0);
   }
 
   uint16_t check = pat_node_get_check(pat, node);
@@ -6333,8 +6335,8 @@ grn_pat_node_compare_by_key(const grn_id id1, const grn_id id2, void *arg)
 
   pat_node_common *node1 = _pat_node_get(ctx, pat, id1);
   pat_node_common *node2 = _pat_node_get(ctx, pat, id2);
-  uint64_t node1_key_offset = pat_node_get_key_position(pat, node1);
-  uint64_t node2_key_offset = pat_node_get_key_position(pat, node2);
+  uint64_t node1_key_offset = pat_node_get_key_offset(pat, node1);
+  uint64_t node2_key_offset = pat_node_get_key_offset(pat, node2);
 
   if (node1_key_offset > node2_key_offset) {
     return 1;
@@ -6407,10 +6409,10 @@ pat_key_defrag_each(grn_ctx *ctx,
 
     /* If the position is the same, do not copy because the same key is already
      * there. */
-    uint64_t node_key_position = pat_node_get_key_position(pat, node);
-    if (node_key_position != new_curr_key) {
+    uint64_t node_key_offset = pat_node_get_key_offset(pat, node);
+    if (node_key_offset != new_curr_key) {
       uint8_t *key_address;
-      KEY_AT(pat, node_key_position, key_address, 0);
+      KEY_AT(pat, node_key_offset, key_address, 0);
 
       grn_pat_wal_add_entry_data wal_data = {0};
       wal_data.event = GRN_WAL_EVENT_DEFRAG_KEY;
