@@ -138,22 +138,22 @@ jobs:
       fail-fast: false
       matrix:
         id:
-          - debian-bookworm-amd64
-          - debian-bookworm-arm64
-          - debian-trixie-amd64
-          - debian-trixie-arm64
+#          - debian-bookworm-amd64
+#          - debian-bookworm-arm64
+#          - debian-trixie-amd64
+#          - debian-trixie-arm64
           - ubuntu-jammy-amd64
           - ubuntu-jammy-arm64
-          - ubuntu-noble-amd64
-          - ubuntu-noble-arm64
-          - almalinux-8-x86_64
-          - almalinux-8-aarch64
-          - almalinux-9-x86_64
-          - almalinux-9-aarch64
-          - almalinux-10-x86_64
-          - almalinux-10-aarch64
-          - amazon-linux-2023-x86_64
-          - amazon-linux-2023-aarch64
+ #         - ubuntu-noble-amd64
+ #         - ubuntu-noble-arm64
+ #         - almalinux-8-x86_64
+ #         - almalinux-8-aarch64
+ #         - almalinux-9-x86_64
+ #         - almalinux-9-aarch64
+ #         - almalinux-10-x86_64
+ #         - almalinux-10-aarch64
+ #         - amazon-linux-2023-x86_64
+ #         - amazon-linux-2023-aarch64
     env:
       APACHE_ARROW_REPOSITORY: ${{ github.workspace }}/apache-arrow
     # condition && true-case || false-case

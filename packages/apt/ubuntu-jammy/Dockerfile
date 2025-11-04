@@ -51,7 +51,5 @@ RUN \
 RUN \
   if [ $(arch) != "x86_64" ]; then \
     echo "DEBUILD_LINTIAN=no" >> /etc/devscripts.conf; \
-  fi
-
-RUN \
+  fi && \
   echo > /etc/resolv.conf
