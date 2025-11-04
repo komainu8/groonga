@@ -49,7 +49,7 @@ RUN \
   apt clean
 
 RUN \
+  touch /etc/resolv.conf && \
   if [ $(arch) != "x86_64" ]; then \
     echo "DEBUILD_LINTIAN=no" >> /etc/devscripts.conf; \
-  fi && \
-  echo > /etc/resolv.conf
+  fi
