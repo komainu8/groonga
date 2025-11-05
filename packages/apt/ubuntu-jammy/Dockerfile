@@ -31,7 +31,6 @@ RUN \
     libcurl4-openssl-dev \
     libedit-dev \
     libevent-dev \
-    libfaiss-dev \
     liblz4-dev \
     libmecab-dev \
     libmsgpack-dev \
