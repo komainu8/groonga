@@ -13,6 +13,7 @@ Build-Depends:
   libevent-dev,
 # Ubuntu 24.04 doesn't provide this...
 #  libfaiss-dev,
+  liblapack3,
   liblapack-dev,
   liblz4-dev,
   libmecab-dev,
