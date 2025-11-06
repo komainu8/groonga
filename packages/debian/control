@@ -6,6 +6,7 @@ Uploaders: HAYASHI Kentaro <hayashi@clear-code.com>
 Build-Depends:
   cmake,
   debhelper (>= 12),
+  libblas3,
   libblas-dev,
   libcurl4-openssl-dev,
   libedit-dev,
