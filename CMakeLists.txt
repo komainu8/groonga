@@ -1943,7 +1943,7 @@ if(NOT "${GRN_WITH_FAISS}" STREQUAL "no")
     find_package(OpenMP)
     find_package(BLAS)
     find_package(LAPACK)
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.22
        AND NOT WIN32
        AND OpenMP_FOUND
        AND BLAS_FOUND
