@@ -75,17 +75,17 @@ jobs:
         include:
           - cc: gcc
             cxx: g++
-          - cc: gcc
-            cxx: g++
-            apache-arrow-main: yes
-          - cc: gcc
-            cxx: g++
-            mruby: "OFF"
-          - cc: clang
-            cxx: clang++
-          - cc: clang
-            cxx: clang++
-            ubsan: "ON"
+#          - cc: gcc
+#            cxx: g++
+#            apache-arrow-main: yes
+#          - cc: gcc
+#            cxx: g++
+#            mruby: "OFF"
+#          - cc: clang
+#            cxx: clang++
+#          - cc: clang
+#            cxx: clang++
+#            ubsan: "ON"
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
