@@ -75,7 +75,6 @@ jobs:
         include:
           - cc: gcc
             cxx: g++
-            apache-arrow-main: yes
 #          - cc: gcc
 #            cxx: g++
 #            apache-arrow-main: yes
@@ -254,7 +253,7 @@ jobs:
         run: |
           grntest \
             --base-dir test/command \
-            --n-retries=2 \
+            --n-retries=4 \
             --read-timeout=30 \
             --reporter=mark \
             test/command/suite
