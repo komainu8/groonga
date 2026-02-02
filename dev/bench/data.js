@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769758481507,
+  "lastUpdate": 1769999216619,
   "repoUrl": "https://github.com/komainu8/groonga",
   "entries": {
     "Benchmark": [
@@ -4182,6 +4182,108 @@ window.BENCHMARK_DATA = {
             "value": 0.01510691300001099,
             "unit": "s/iter",
             "extra": "iterations: 5\ncpu: 0.0013909999999993095 s\nthreads: undefined"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "horimoto@clear-code.com",
+            "name": "Horimoto Yasuhiro",
+            "username": "komainu8"
+          },
+          "committer": {
+            "email": "horimoto@clear-code.com",
+            "name": "Horimoto Yasuhiro",
+            "username": "komainu8"
+          },
+          "distinct": true,
+          "id": "ee9267c3ee4ddbaf7d42a6a49a73160efd077395",
+          "message": "Disable OpenZL in MinGW\n\nDuplicate zstd definition during linkage as below.\n\n```\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_compress.c.obj): in function `ZSTD_compressBound':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/compress/zstd_compress.c:72: multiple definition of `ZSTD_compressBound'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000326.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_compress.c.obj): in function `ZSTD_compressCCtx':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/compress/zstd_compress.c:5491: multiple definition of `ZSTD_compressCCtx'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000327.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_compress.c.obj): in function `ZSTD_createCCtx':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/compress/zstd_compress.c:98: multiple definition of `ZSTD_createCCtx'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000349.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_compress.c.obj): in function `ZSTD_freeCCtx':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/compress/zstd_compress.c:182: multiple definition of `ZSTD_freeCCtx'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000409.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_compress.c.obj): in function `ZSTD_compressStream2':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/compress/zstd_compress.c:6451: multiple definition of `ZSTD_compressStream2'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000337.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_decompress.c.obj): in function `ZSTD_decompress':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/decompress/zstd_decompress.c:1204: multiple definition of `ZSTD_decompress'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000372.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_common.c.obj): in function `ERR_isError':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/common/error_private.h:52: multiple definition of `ZSTD_isError'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000458.o):(.text+0x0): first defined here\nD:/a/_temp/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: _deps/openzl-build/zstd_build/lib/libzstd.a(zstd_common.c.obj): in function `ZSTD_getErrorName':\nD:/a/groonga/groonga/ci/msys2/src/build-x86_64/_deps/openzl-src/deps/zstd/lib/common/zstd_common.c:40: multiple definition of `ZSTD_getErrorName'; D:/a/_temp/msys64/ucrt64/lib/libzstd.dll.a(libzstd_dll_d000430.o):(.text+0x0): first defined here\ncollect2.exe: error: ld returned 1 exit status\n```",
+          "timestamp": "2026-02-02T11:22:06+09:00",
+          "tree_id": "504282ea36cb8f4be8232f66a9d9ef536184d885",
+          "url": "https://github.com/komainu8/groonga/commit/ee9267c3ee4ddbaf7d42a6a49a73160efd077395"
+        },
+        "date": 1769999215757,
+        "tool": "googlecpp",
+        "benches": [
+          {
+            "name": "stdio: json|json: load/data/multiple",
+            "value": 0.3936556209999367,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.01867600000000011 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: load/data/short_text",
+            "value": 0.2692383319999294,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.01325800000000013 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: select/olap/multiple",
+            "value": 0.015933612000026187,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.00038299999999980017 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: select/olap/n_workers/multiple",
+            "value": 0.015312279999989187,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0003479999999999872 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: wal_recover/db/auto_recovery/column/index",
+            "value": 1.5184087680000289,
+            "unit": "s/iter",
+            "extra": "iterations: 1\ncpu: 0.00015700000000001824 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: load/data/multiple",
+            "value": 0.25129661599999054,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.006044999999999898 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: load/data/short_text",
+            "value": 0.134456436999983,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.005877999999999717 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: select/olap/multiple",
+            "value": 0.017039951000015208,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0015199999999999936 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: select/olap/n_workers/multiple",
+            "value": 0.0163033069999301,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0014570000000000138 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: load/data/multiple",
+            "value": 0.05983599899980163,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.006680000000000436 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: load/data/short_text",
+            "value": 0.06351564399989229,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.00639300000000062 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: select/olap/multiple",
+            "value": 0.017304152000065187,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0017300000000001758 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: select/olap/n_workers/multiple",
+            "value": 0.02619207399999368,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.001435999999999965 s\nthreads: undefined"
           }
         ]
       }
