@@ -19,7 +19,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-arrow"
          "${MINGW_PACKAGE_PREFIX}-mecab"
          "${MINGW_PACKAGE_PREFIX}-mecab-naist-jdic"
          "${MINGW_PACKAGE_PREFIX}-msgpack-c"
-         "${MINGW_PACKAGE_PREFIX}-onigmo"
+#         "${MINGW_PACKAGE_PREFIX}-onigmo"
          "${MINGW_PACKAGE_PREFIX}-xxhash"
          "${MINGW_PACKAGE_PREFIX}-zlib"
          "${MINGW_PACKAGE_PREFIX}-zstd")
