@@ -562,9 +562,6 @@ jobs:
           - msystem: MINGW64
             package-prefix: mingw-w64-x86_64
             runner: windows-latest
-          - msystem: MINGW32
-            package-prefix: mingw-w64-i686
-            runner: windows-latest
           - msystem: UCRT64
             package-prefix: mingw-w64-ucrt-x86_64
             runner: windows-latest
