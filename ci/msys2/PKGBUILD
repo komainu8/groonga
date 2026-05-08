@@ -3,14 +3,14 @@
 _realname=groonga
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=
+pkgver=16.0.0
 pkgrel=1
 pkgdesc="An opensource fulltext search engine (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://groonga.org/"
-license=('LGPL2')
-options=('strip' 'staticlibs')
+msys2_repository_url='https://github.com/groonga/groonga'
+license=('spdx:LGPL-2.1-or-later')
 source=(${_realname}-${pkgver}.tar.gz
         001-aarch64.patch)
 depends=("${MINGW_PACKAGE_PREFIX}-arrow"
@@ -19,7 +19,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-arrow"
          "${MINGW_PACKAGE_PREFIX}-mecab"
          "${MINGW_PACKAGE_PREFIX}-mecab-naist-jdic"
          "${MINGW_PACKAGE_PREFIX}-msgpack-c"
-#         "${MINGW_PACKAGE_PREFIX}-onigmo"
+         "${MINGW_PACKAGE_PREFIX}-onigmo"
          "${MINGW_PACKAGE_PREFIX}-xxhash"
          "${MINGW_PACKAGE_PREFIX}-zlib"
          "${MINGW_PACKAGE_PREFIX}-zstd")
@@ -52,25 +52,32 @@ prepare() {
 }
 
 build() {
-  [[ -d ${srcdir}/build-${CARCH} ]] && rm -rf ${srcdir}/build-${CARCH}
-  mkdir -p ${srcdir}/build-${CARCH} && cd ${srcdir}/build-${CARCH}
+  mkdir -p ${srcdir}/build-${MSYSTEM} && cd ${srcdir}/build-${MSYSTEM}
 
+  declare -a _extra_config
+  if check_option "debug" "n"; then
+    _extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+  else
+    _extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+  fi
+
+  CFLAGS+=" -Wno-incompatible-pointer-types" \
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
     ${MINGW_PREFIX}/bin/cmake.exe \
-      ../${_realname}-${pkgver} \
-      -DCMAKE_BUILD_TYPE=Release \
+      -G Ninja \
+      "${_extra_config[@]}" \
       -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
       -DGRN_WITH_APACHE_ARROW=ON \
       -DGRN_WITH_BLOSC=auto \
       -DGRN_WITH_MRUBY=ON \
-      -G Ninja
+      ../${_realname}-${pkgver}
 
-  ninja
+  ${MINGW_PREFIX}/bin/cmake --build .
 }
 
 package() {
-  cd ${srcdir}/build-${CARCH}
-  DESTDIR="${pkgdir}" ninja install
+  cd ${srcdir}/build-${MSYSTEM}
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --install .
 
   local PREFIX_DEPS=$(cygpath -am ${MINGW_PREFIX})
   pushd "${pkgdir}${MINGW_PREFIX}/lib/pkgconfig"
