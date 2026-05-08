@@ -9,8 +9,8 @@ pkgdesc="An opensource fulltext search engine (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://groonga.org/"
-#msys2_repository_url='https://github.com/groonga/groonga'
-license=('spdx:LGPL-2.1-or-later')
+license=('LGPL2')
+options=('strip' 'staticlibs')
 source=(${_realname}-${pkgver}.tar.gz
         001-aarch64.patch)
 depends=("${MINGW_PACKAGE_PREFIX}-arrow"
@@ -52,31 +52,25 @@ prepare() {
 }
 
 build() {
-  mkdir -p ${srcdir}/build-${MSYSTEM} && cd ${srcdir}/build-${MSYSTEM}
-
-  declare -a _extra_config
-  if check_option "debug" "n"; then
-    _extra_config+=("-DCMAKE_BUILD_TYPE=Release")
-  else
-    _extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
-  fi
+  [[ -d ${srcdir}/build-${CARCH} ]] && rm -rf ${srcdir}/build-${CARCH}
+  mkdir -p ${srcdir}/build-${CARCH} && cd ${srcdir}/build-${CARCH}
 
   CFLAGS+=" -Wno-incompatible-pointer-types" \
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
     ${MINGW_PREFIX}/bin/cmake.exe \
-      -G Ninja \
-      "${_extra_config[@]}" \
+      ../${_realname}-${pkgver} \
+      -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
       -DGRN_WITH_APACHE_ARROW=ON \
       -DGRN_WITH_BLOSC=auto \
       -DGRN_WITH_MRUBY=ON \
-      ../${_realname}-${pkgver}
+      -G Ninja
 
   ninja
 }
 
 package() {
-  cd ${srcdir}/build-${MSYSTEM}
+  cd ${srcdir}/build-${CARCH}
   DESTDIR="${pkgdir}" ninja install
 
   local PREFIX_DEPS=$(cygpath -am ${MINGW_PREFIX})
