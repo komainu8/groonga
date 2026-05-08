@@ -9,7 +9,7 @@ pkgdesc="An opensource fulltext search engine (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://groonga.org/"
-msys2_repository_url='https://github.com/groonga/groonga'
+#msys2_repository_url='https://github.com/groonga/groonga'
 license=('spdx:LGPL-2.1-or-later')
 source=(${_realname}-${pkgver}.tar.gz
         001-aarch64.patch)
@@ -72,12 +72,12 @@ build() {
       -DGRN_WITH_MRUBY=ON \
       ../${_realname}-${pkgver}
 
-  ${MINGW_PREFIX}/bin/cmake --build .
+  ninja
 }
 
 package() {
   cd ${srcdir}/build-${MSYSTEM}
-  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR="${pkgdir}" ninja install
 
   local PREFIX_DEPS=$(cygpath -am ${MINGW_PREFIX})
   pushd "${pkgdir}${MINGW_PREFIX}/lib/pkgconfig"
