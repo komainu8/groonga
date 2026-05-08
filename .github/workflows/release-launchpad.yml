@@ -1,16 +1,15 @@
 name: Release to Launchpad
 on:
   push:
-    paths:
-      - "*"
+#    paths:
 #      - '.github/workflows/release-launchpad.yml'
 #      - 'doc/source/news/*'
-    tags:
-      - "*"
+#    tags:
+#      - "*"
   pull_request:
-    paths:
-      - '.github/workflows/release-launchpad.yml'
-      - 'doc/source/news/*'
+#    paths:
+#      - '.github/workflows/release-launchpad.yml'
+#      - 'doc/source/news/*'
 jobs:
   publish:
     name: Publish
