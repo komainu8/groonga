@@ -17,13 +17,10 @@ jobs:
     environment: release
     steps:
       - name: Download source archive
-        if: |
-          github.ref_type == 'tag'
         timeout-minutes: 60
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-#          workflows=(cmake.yml document.yml package.yml)
           workflows=(package.yml)
           for workflow in "${workflows[@]}"; do
             run_id=""
