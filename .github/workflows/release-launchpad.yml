@@ -2,8 +2,9 @@ name: Release to Launchpad
 on:
   push:
     paths:
-      - '.github/workflows/release-launchpad.yml'
-      - 'doc/source/news/*'
+      - "*"
+#      - '.github/workflows/release-launchpad.yml'
+#      - 'doc/source/news/*'
     tags:
       - "*"
   pull_request:
