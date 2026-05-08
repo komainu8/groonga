@@ -46,7 +46,7 @@ jobs:
               ${run_id}
             gh run download ${run_id} \
               --dir release-artifacts \
-              --pattern "release-source.zip"
+              --pattern "release-source"
           done
           unzip release-artifacts/release-source.zip
       - name: Prepare for Launchpad publishing
