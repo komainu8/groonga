@@ -23,7 +23,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          workflows=(cmake.yml document.yml package.yml)
+#          workflows=(cmake.yml document.yml package.yml)
+          workflows=(package.yml)
           for workflow in "${workflows[@]}"; do
             run_id=""
             while true; do
@@ -74,4 +75,4 @@ jobs:
         run: |
           echo "${LAUNCHPAD_DEPLOY_KEY}" | gpg --import
           echo "trusted-key ${LAUNCHPAD_UPLOADER_PGP_KEY}" > ~/.gnupg/gpg.conf
-          rake -C packages ubuntu
+#          rake -C packages ubuntu
