@@ -12,7 +12,8 @@ url="https://groonga.org/"
 license=('LGPL2')
 options=('strip' 'staticlibs')
 source=(${_realname}-${pkgver}.tar.gz
-        001-aarch64.patch)
+        001-aarch64.patch
+        002-fix-aarch64-include.patch)
 depends=("${MINGW_PACKAGE_PREFIX}-arrow"
          "${MINGW_PACKAGE_PREFIX}-blosc2"
          "${MINGW_PACKAGE_PREFIX}-lz4"
@@ -31,6 +32,7 @@ makedepends=("git"
              "${MINGW_PACKAGE_PREFIX}-ruby"
              "${MINGW_PACKAGE_PREFIX}-xsimd")
 sha256sums=('SKIP'
+            'SKIP'
             'SKIP')
 validpgpkeys=('2701F317CFCCCB975CADE9C2624CF77434839225') # Groonga Key <packages@groonga.org>
 
@@ -48,7 +50,8 @@ prepare() {
   # TODO: Remove this patch after updating mruby to a version that supports Windows ARM64
   # This issue has already been resolved upstream: https://github.com/mruby/mruby/issues/6637
   apply_patch_with_msg \
-    001-aarch64.patch
+    001-aarch64.patch \
+    002-fix-aarch64-include.patch
 }
 
 build() {
