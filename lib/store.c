@@ -712,7 +712,7 @@ grn_ra_set_generator(grn_ctx *ctx, grn_ra *ra, grn_raw_string generator)
 
 #define GRN_JA_W_CHUNK_THRESH_V1 7
 #define GRN_JA_W_CHUNK_THRESH_V2 16
-#define GRN_JA_W_CAPACITY        38
+#define GRN_JA_W_CAPACITY        40
 #define GRN_JA_W_SEGMENT         22
 
 #define JA_ELEMENT_SEG_VOID      (0xffffffffU)
