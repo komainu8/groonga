@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784015442598,
+  "lastUpdate": 1785229547032,
   "repoUrl": "https://github.com/komainu8/groonga",
   "entries": {
     "Benchmark": [
@@ -13770,6 +13770,108 @@ window.BENCHMARK_DATA = {
             "value": 0.03084217800000033,
             "unit": "s/iter",
             "extra": "iterations: 5\ncpu: 0.0020339999999999525 s\nthreads: undefined"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "horimoto@clear-code.com",
+            "name": "Horimoto Yasuhiro",
+            "username": "komainu8"
+          },
+          "committer": {
+            "email": "horimoto@clear-code.com",
+            "name": "Horimoto Yasuhiro",
+            "username": "komainu8"
+          },
+          "distinct": true,
+          "id": "06875e04a60c0f652686670699eb90b3e8950e5c",
+          "message": "string: merge character types when using multiple normalizers\n\nFix: GH-2853\n\nThis is a limited fix.\n\nCurrently, ctypes are merged only in a limited case.\nSpecifically, ctypes are merged only when the number of characters\nin the first normalized result is equal to the number of characters\nin the latter normalized result.\n\nIn other words, this works only when NormalizerTable performs\nnormalization without changing the number of characters.\n\nThe latter normalizer is NormalizerTable, and users can define any\nnormalization pattern in NormalizerTable.\n\nIt is difficult to handle all such cases with single implementation here.\nTherefore, we currently support only the simple case.\n\nReported by askdkc. Tanks!!!",
+          "timestamp": "2026-07-28T17:57:24+09:00",
+          "tree_id": "1bf36d05160ee44f8bd28958957c137a6b9abe1a",
+          "url": "https://github.com/komainu8/groonga/commit/06875e04a60c0f652686670699eb90b3e8950e5c"
+        },
+        "date": 1785229545629,
+        "tool": "googlecpp",
+        "benches": [
+          {
+            "name": "stdio: json|json: load/data/multiple",
+            "value": 0.40711327700012134,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.02080200000000018 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: load/data/short_text",
+            "value": 0.2784179220002443,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.014071999999999751 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: select/olap/multiple",
+            "value": 0.018638548000012634,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0003800000000003245 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: select/olap/n_workers/multiple",
+            "value": 0.020945630000142046,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0003340000000002785 s\nthreads: undefined"
+          },
+          {
+            "name": "stdio: json|json: wal_recover/db/auto_recovery/column/index",
+            "value": 1.4293672269999433,
+            "unit": "s/iter",
+            "extra": "iterations: 1\ncpu: 0.0003800000000000747 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: load/data/multiple",
+            "value": 0.2503500020000047,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.006363000000000035 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: load/data/short_text",
+            "value": 0.1434880989999101,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0066560000000000785 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: select/olap/multiple",
+            "value": 0.01952206299995396,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.001562999999999995 s\nthreads: undefined"
+          },
+          {
+            "name": "http: json|json: select/olap/n_workers/multiple",
+            "value": 0.022644649000085337,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.001627000000000045 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: load/data/multiple",
+            "value": 0.06051181699990593,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.006659999999999888 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: load/data/short_text",
+            "value": 0.0630398900000273,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.006969999999999782 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: select/olap/multiple",
+            "value": 0.02891923799995766,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0019140000000000823 s\nthreads: undefined"
+          },
+          {
+            "name": "http: apache-arrow|apache-arrow: select/olap/n_workers/multiple",
+            "value": 0.027742490000036923,
+            "unit": "s/iter",
+            "extra": "iterations: 5\ncpu: 0.0018160000000000398 s\nthreads: undefined"
           }
         ]
       }
