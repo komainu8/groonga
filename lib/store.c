@@ -2885,10 +2885,40 @@ exit:
   return processed;
 }
 
+static inline uint32_t
+grn_ja_get_current_segment(grn_ja *ja)
+{
+  uint32_t seg = 0;
+  for (seg = 0; seg < JA_N_DATA_SEGMENTS; seg++) {
+    if (SEGMENT_INFO_AT(ja, seg) == 0) {
+      break;
+    }
+  }
+  return seg;
+}
+
+static inline grn_ja *
+grn_ja_get_partition(grn_ctx *ctx, grn_ja_alloc_data *data)
+{
+  if (grn_ja_get_current_segment(data->ja) == JA_N_DATA_SEGMENTS) {
+    /* TODO: Create new ja */
+    char path[PATH_MAX];
+    snprintf(path, sizeof(path), "%s.partitions", data->ja->io->path);
+    data->ja->partitions = (grn_ja **)GRN_CALLOC(sizeof(grn_ja *));
+    data->ja->partitions[0] = grn_ja_create(ctx,
+                                            path,
+                                            data->ja->header->max_element_size,
+                                            data->ja->header->flags);
+    return data->ja->partitions[0];
+  } else {
+    return data->ja;
+  }
+}
+
 static grn_rc
 grn_ja_alloc_chunk(grn_ctx *ctx, grn_ja_alloc_data *data)
 {
-  grn_ja *ja = data->ja;
+  grn_ja *ja = grn_ja_get_partition(ctx, data);
   uint32_t element_size = data->element_size;
   uint32_t chunk_msb = grn_ja_compute_chunk_msb(element_size);
   uint32_t chunk_variation = chunk_msb - JA_W_EINFO;
@@ -2901,12 +2931,7 @@ grn_ja_alloc_chunk(grn_ctx *ctx, grn_ja_alloc_data *data)
   }
   ja_pos *vp = &(ja->header->free_elements[chunk_variation]);
   if (vp->seg == 0) {
-    uint32_t seg = 0;
-    for (seg = 0; seg < JA_N_DATA_SEGMENTS; seg++) {
-      if (SEGMENT_INFO_AT(ja, seg) == 0) {
-        break;
-      }
-    }
+    uint32_t seg = grn_ja_get_current_segment(ja);
     if (seg == JA_N_DATA_SEGMENTS) {
       grn_obj_set_error(ctx,
                         (grn_obj *)ja,
