@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - 'maintenance/**'
+      - 'update-release-no'
     tags:
       - '*'
     paths:
